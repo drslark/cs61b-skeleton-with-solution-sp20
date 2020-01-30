@@ -36,7 +36,7 @@ public class Tester {
         assertTrue(Solutions.threeSum(new int[] { 5, 4, -1, -3, -8 }));
         assertTrue(Solutions.threeSum(new int[] { 1, 0, -10, 3, 6 }));
         assertFalse(Solutions.threeSum(new int[] { 1, 2, 3, 4 }));
-        assertFalse(Solutions.threeSum(new int[] { -5, 5, 4, 3, -10 }));
+        assertFalse(Solutions.threeSum(new int[] { -5, 5, 4, 3 }));
         assertFalse(Solutions.threeSum(new int[] { -8, 1, 2, 9 }));
         
     }
