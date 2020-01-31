@@ -38,7 +38,7 @@ public class Tester {
         assertFalse(Solutions.threeSum(new int[] { 1, 2, 3, 4 }));
         assertFalse(Solutions.threeSum(new int[] { -5, 5, 4, 3 }));
         assertFalse(Solutions.threeSum(new int[] { -8, 1, 2, 9 }));
-        
+    
     }
 
     @Test
