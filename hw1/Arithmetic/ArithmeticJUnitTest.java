@@ -31,7 +31,7 @@ public class ArithmeticJUnitTest {
     }
 
     /* Run the unit tests in this file. */
-    public static void main(String... args) {
+    public static void main(String[] args) {
         System.exit(ucb.junit.textui.runClasses(ArithmeticJUnitTest.class));
     }
 }
