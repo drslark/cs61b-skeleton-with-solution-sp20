@@ -70,13 +70,11 @@ public class CompoundInterest {
      *  INFLATIONRATE. */
     static double totalSavingsReal(double perYear, int targetYear, double rate,
                                    double inflationRate) {
-        rate = (100 + rate) / 100;
         inflationRate = (100 - inflationRate) / 100;
-        double totalSavings = perYear;
-        for (int i = numYears(targetYear); i > 0; i -= 1) {
-            totalSavings += perYear * Math.pow(rate, i) * Math.pow(inflationRate, i);
-        }
-        return totalSavings;
+        int time = numYears(targetYear);
+        double nominalValue = totalSavings(perYear, targetYear, rate);
+        double adjustedValue = nominalValue * Math.pow(inflationRate, time);
+        return adjustedValue;
     }
 
     /** Prints out the future inflation-adjusted value of a dollar in

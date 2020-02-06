@@ -57,15 +57,12 @@ public class CompoundInterestTest {
     @Test
     public void testTotalSavingsReal() {
         double tolerance = 0.01;
-        double test1 = 450 * Math.pow(1.17, 3) * Math.pow(0.94, 3)
-                + 450 * Math.pow(1.17, 2) * Math.pow(0.94, 2)
-                + 450 * 1.17 * 0.94 + 450;
-        double test2 = 3600 * Math.pow(2.25, 6) * Math.pow(0.88, 6)
-                + 3600 * Math.pow(2.25, 5) * Math.pow(0.88, 5)
-                + 3600 * Math.pow(2.25, 4) * Math.pow(0.88, 4)
-                + 3600 * Math.pow(2.25, 3) * Math.pow(0.88, 3)
-                + 3600 * Math.pow(2.25, 2) * Math.pow(0.88, 2)
-                + 3600 * 2.25 * 0.88 + 3600;
+        double test1 = (450 * Math.pow(1.17, 3) + 450 * Math.pow(1.17, 2)
+                + 450 * Math.pow(1.17, 1) + 450) * Math.pow(0.94, 3);
+        double test2 = (3600 * Math.pow(2.25, 6)
+                + 3600 * Math.pow(2.25, 5) + 3600 * Math.pow(2.25, 4)
+                + 3600 * Math.pow(2.25, 3) + 3600 * Math.pow(2.25, 2)
+                + 3600 * 2.25 + 3600) * Math.pow(0.88, 6);
         assertEquals(test1,
                 CompoundInterest.totalSavingsReal(450, 2023, 17, 6), tolerance);
         assertEquals(test2,
