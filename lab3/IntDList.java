@@ -123,25 +123,21 @@ public class IntDList {
         else if (index == -1 || index == size())
             insertBack(d);
         else {
-            DNode newPrev, newNext;
+            DNode curr;
             if (index < 0) {
-                newPrev = _back._prev;
-                newNext = _back;
+                curr = _back._prev;
                 for (int j = -2; j > index; j -= 1) {
-                    newPrev = newPrev._prev;
-                    newNext = newNext._prev;
+                    curr = curr._prev;
                 }
             } else {
-                newPrev = _front;
-                newNext = _front._next;
-                for (int j = 1; j < index; j += 1) {
-                    newPrev = newPrev._next;
-                    newNext = newNext._next;
+                curr = _front._next;
+                for (int j = 1; j < index - 1; j += 1) {
+                    curr = curr._next;
                 }
             }
-            DNode newNode = new DNode(newPrev, d, newNext);
-            newPrev._next = newNode;
-            newNext._prev = newNode;
+            DNode newNode = new DNode(curr, d, curr._next);
+            curr._next._prev = newNode;
+            curr._next = newNode;
         }
     }
 
