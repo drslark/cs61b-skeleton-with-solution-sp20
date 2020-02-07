@@ -48,10 +48,16 @@ public class IntDList {
      */
     public int size() {
         // FIXME: Implement this method and return correct value
-        return 0;
+        int size = 0;
+        DNode place = _front;
+        while (place != null) {
+            size += 1;
+            place = place._next;
+        }
+        return size;
     }
 
-    /**
+    /**'
      * @param i index of element to return,
      *          where i = 0 returns the first element,
      *          i = 1 returns the second element,
@@ -63,21 +69,26 @@ public class IntDList {
      */
     public int get(int i) {
         // FIXME: Implement this method and return correct value
-        return 0;
+        int j = 0;
+        DNode place = _front;
+        for (; j < i; j += 1) {
+            place = place._next;
+        }
+        return place._val;
     }
 
     /**
      * @param d value to be inserted in the front
      */
     public void insertFront(int d) {
-        // FIXME: Implement this method
+        _front._prev = new DNode(null, d, _front);
     }
 
     /**
      * @param d value to be inserted in the back
      */
     public void insertBack(int d) {
-        // FIXME: Implement this method
+        _front._next = new DNode(_front, d, null);
     }
 
     /**
