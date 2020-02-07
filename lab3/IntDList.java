@@ -67,20 +67,13 @@ public class IntDList {
      * @return The integer value at index i
      */
     public int get(int i) {
-        if (i < 0) {
-            DNode start = _back;
-            for (int j = -1; j > i; j -= 1) {
-                start = start._prev;
-            }
-            return start._val;
-        } else {
-            DNode start = _front;
-            for (int j = 0; j < i; j += 1) {
-                start = start._next;
-            }
-            return start._val;
+        if (i < 0)
+            i += size();
+        DNode start = _front;
+        for (int j = 0; j < i; j += 1) {
+            start = start._next;
         }
-
+        return start._val;
     }
 
     /**
@@ -125,7 +118,31 @@ public class IntDList {
      *              and -(size+1) <= index <= -1 for negative indices (including insertions at front and back).
      */
     public void insertAtIndex(int d, int index) {
-        if
+        if (index == 0 || index == -(size() + 1) )
+            insertFront(d);
+        else if (index == -1 || index == size())
+            insertBack(d);
+        else {
+            DNode newPrev, newNext;
+            if (index < 0) {
+                newPrev = _back._prev;
+                newNext = _back;
+                for (int j = -2; j > index; j -= 1) {
+                    newPrev = newPrev._prev;
+                    newNext = newNext._prev;
+                }
+            } else {
+                newPrev = _front;
+                newNext = _front._next;
+                for (int j = 1; j < index; j += 1) {
+                    newPrev = newPrev._next;
+                    newNext = newNext._next;
+                }
+            }
+            DNode newNode = new DNode(newPrev, d, newNext);
+            newPrev._next = newNode;
+            newNext._prev = newNode;
+        }
     }
 
     /**
@@ -134,8 +151,14 @@ public class IntDList {
      * @return the item that was deleted
      */
     public int deleteFront() {
-        // FIXME: Implement this method and return correct value
-        return 0;
+        int value = get(0);
+        _front = _front._next;
+        if (_front == null){
+            _back = null;
+        } else {
+            _front._prev = null;
+        }
+        return value;
     }
 
     /**
@@ -144,8 +167,14 @@ public class IntDList {
      * @return the item that was deleted
      */
     public int deleteBack() {
-        // FIXME: Implement this method and return correct value
-        return 0;
+        int value = get(-1);
+        _back = _back._prev;
+        if (_back == null){
+            _front = null;
+        } else {
+            _back._next = null;
+        }
+        return value;
     }
 
     /**
@@ -160,8 +189,29 @@ public class IntDList {
      * @return the item that was deleted
      */
     public int deleteAtIndex(int index) {
-        // FIXME: Implement this method and return correct value
-        return 0;
+        if (index == 0 || index == -size())
+            return deleteFront();
+        else if (index == -1 || index == size() - 1)
+            return deleteBack();
+        else {
+            DNode curr;
+            if (index < 0) {
+                curr = _back._prev;
+                for (int j = -2; j > index; j -= 1) {
+                    curr = curr._prev;
+                }
+            } else {
+                curr = _front._next;
+                for (int j = 1; j < index; j += 1) {
+                    curr = curr._next;
+                }
+            }
+            curr._prev._next = curr._next;
+            curr._next._prev = curr._prev;
+            curr._next = curr._prev = null;
+            return curr._val;
+        }
+
     }
 
     /**
@@ -173,8 +223,16 @@ public class IntDList {
      * System.out.println(a); //prints ab
      */
     public String toString() {
-        // FIXME: Implement this method to return correct value
-        return null;
+        DNode place = _front;
+        String str = "[";
+        for (; place != null; place = place._next) {
+             str += place._val;
+             if (place._next != null) {
+                 str += ", ";
+             }
+        }
+        str += "]";
+        return str;
     }
 
     /**
