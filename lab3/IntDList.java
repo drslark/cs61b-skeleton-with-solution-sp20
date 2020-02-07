@@ -47,7 +47,6 @@ public class IntDList {
      * @return The number of elements in this list.
      */
     public int size() {
-        // FIXME: Implement this method and return correct value
         int size = 0;
         DNode place = _front;
         while (place != null) {
@@ -57,7 +56,7 @@ public class IntDList {
         return size;
     }
 
-    /**'
+    /**
      * @param i index of element to return,
      *          where i = 0 returns the first element,
      *          i = 1 returns the second element,
@@ -68,27 +67,50 @@ public class IntDList {
      * @return The integer value at index i
      */
     public int get(int i) {
-        // FIXME: Implement this method and return correct value
-        int j = 0;
-        DNode place = _front;
-        for (; j < i; j += 1) {
-            place = place._next;
+        if (i < 0) {
+            DNode start = _back;
+            for (int j = -1; j > i; j -= 1) {
+                start = start._prev;
+            }
+            return start._val;
+        } else {
+            DNode start = _front;
+            for (int j = 0; j < i; j += 1) {
+                start = start._next;
+            }
+            return start._val;
         }
-        return place._val;
+
     }
 
     /**
      * @param d value to be inserted in the front
      */
     public void insertFront(int d) {
-        _front._prev = new DNode(null, d, _front);
+        if (_front == null && _back == null) {
+            DNode first = new DNode(d);
+            _front = first;
+            _back = first;
+        } else {
+            DNode link = new DNode(null, d, _front);
+            _front._prev = link;
+            _front = link;
+        }
     }
 
     /**
      * @param d value to be inserted in the back
      */
     public void insertBack(int d) {
-        _front._next = new DNode(_front, d, null);
+        if (_front == null && _back == null) {
+            DNode first = new DNode(d);
+            _front = first;
+            _back = first;
+        } else {
+            DNode link = new DNode(_back, d, null);
+            _back._next = link;
+            _back = link;
+        }
     }
 
     /**
@@ -103,7 +125,7 @@ public class IntDList {
      *              and -(size+1) <= index <= -1 for negative indices (including insertions at front and back).
      */
     public void insertAtIndex(int d, int index) {
-        // FIXME: Implement this method
+        if
     }
 
     /**
