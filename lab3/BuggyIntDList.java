@@ -71,9 +71,10 @@ public class BuggyIntDList extends IntDList {
 
         // HINT: What does this if block do? Use Debugger and Java Visualizer to figure out.
         if (temp != null) {
-            while (_back._next != null){
+            while (_back._next != null) {
                 _back = _back._next;
             }
             _front = temp._prev;
+        }
     }
 }
