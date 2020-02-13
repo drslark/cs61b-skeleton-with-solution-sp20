@@ -16,8 +16,9 @@ public class IntList {
         tail = tail0;
     }
 
-    /** A List with null tail, and head = 0. */
-    public IntList() {
+    /** A List with null tail, and head = 0.
+     * @param ints*/
+    public IntList(int[] ints) {
         /* NOTE: public IntList () { }  would also work. */
         this (0, null);
     }

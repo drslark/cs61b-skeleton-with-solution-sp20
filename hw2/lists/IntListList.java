@@ -9,8 +9,9 @@ public class IntListList {
         head = head0; tail = tail0;
     }
 
-    /** A List with null head and tail. */
-    public IntListList() {
+    /** A List with null head and tail.
+     * @param ints*/
+    public IntListList(int[][] ints) {
         this (null, null);
     }
 

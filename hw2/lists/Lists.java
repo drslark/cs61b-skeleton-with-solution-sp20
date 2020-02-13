@@ -6,7 +6,7 @@ package lists;
 /** HW #2, Problem #1. */
 
 /** List problem.
- *  @author
+ *  @Amit Bhat
  */
 class Lists {
 
@@ -19,7 +19,31 @@ class Lists {
      *  Destructive: creates no new IntList items, and may modify the
      *  original list pointed to by L. */
     static IntListList naturalRuns(IntList L) {
-        /* *Replace this body with the solution. */
-        return null;
+        IntListList newList = new IntListList(null, null);
+        IntListList pointer = newList;
+
+        IntList m, k;
+        k = m = L;
+        int last = L.head;
+        L = L.tail;
+        int numRun = 1;
+
+        while (L != null) {
+            if (L.head > last) {
+                numRun += 1;
+            }
+            else {
+                for (; numRun > 0; numRun -= 1) {
+                    k = k.tail;
+                }
+                k.tail = null;
+                pointer.head = m;
+                pointer = pointer.tail;
+                k = m = L;
+            }
+            last = L.head;
+            L = L.tail;
+        }
+        return newList;
     }
 }
