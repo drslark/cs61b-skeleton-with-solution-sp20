@@ -19,7 +19,10 @@ public class ListsTest {
                 new IntList(new int[] { 1, 3, 4, 4, 5, 6, 9, 12 });
 
         IntListList bListList =
-                new IntListList(new int[][] { {-1, 0, 3}, {-3, 5}, {6, 9, 12} });
+                new IntListList(new int[][] {
+                        {-1, 0, 3},
+                        {-3, 5},
+                        {6, 9, 12} });
         IntList bList =
                 new IntList(new int[] { -1, 0, 3, -3, 5, 6, 9, 12 });
 
