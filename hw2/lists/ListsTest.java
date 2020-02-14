@@ -14,22 +14,22 @@ public class ListsTest {
     public void testNaturalRuns() {
 
         IntListList aListList =
-                new IntListList(new int[][] { {1, 3, 4}, {4, 5}, {6, 9, 12} });
+                IntListList.list(new int[][] { {1, 3, 4}, {4, 5}, {2, 9, 12} });
         IntList aList =
-                new IntList(new int[] { 1, 3, 4, 4, 5, 6, 9, 12 });
+                IntList.list(new int[] { 1, 3, 4, 4, 5, 2, 9, 12 });
 
         IntListList bListList =
-                new IntListList(new int[][] {
+                IntListList.list(new int[][] {
                         {-1, 0, 3},
                         {-3, 5},
-                        {6, 9, 12} });
+                        {-8, 9, 12} });
         IntList bList =
-                new IntList(new int[] { -1, 0, 3, -3, 5, 6, 9, 12 });
+                IntList.list(new int[] { -1, 0, 3, -3, 5, -8, 9, 12 });
 
         IntListList cListList =
-                new IntListList(new int[][] { {-1}, {-4, 0, 3, 9}, {-3} });
+                IntListList.list(new int[][] { {-1}, {-4, 0, 3, 9}, {-3} });
         IntList cList =
-                new IntList(new int[] { -1, -4, 0, 3, 9, -3 });
+                IntList.list(new int[] { -1, -4, 0, 3, 9, -3 });
 
         assertEquals(aListList, Lists.naturalRuns(aList));
         assertEquals(bListList, Lists.naturalRuns(bList));

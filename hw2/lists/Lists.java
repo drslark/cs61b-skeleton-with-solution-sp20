@@ -23,26 +23,23 @@ class Lists {
         IntListList pointer = newList;
 
         IntList m, k;
-        k = m = L;
-        int last = L.head;
-        L = L.tail;
-        int numRun = 1;
+        k = L;
+        m = L;
 
-        while (L != null) {
-            if (L.head > last) {
-                numRun += 1;
-            } else {
-                for (; numRun > 0; numRun -= 1) {
-                    k = k.tail;
-                }
+        while (k.tail != null) {
+            if (k.head >= k.tail.head) {
+                m = k.tail;
                 k.tail = null;
-                pointer.head = m;
+                pointer.tail = new IntListList(L, null);
                 pointer = pointer.tail;
-                k = m = L;
+                L = k = m;
+            } else {
+                k = k.tail;
             }
-            last = L.head;
-            L = L.tail;
         }
-        return newList;
+        pointer.tail = new IntListList(L, null);
+        pointer = pointer.tail;
+
+        return newList.tail;
     }
 }
