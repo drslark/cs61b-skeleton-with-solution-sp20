@@ -49,30 +49,30 @@ class Arrays {
      *  returns the three-element array
      *  {{1, 3, 7}, {5}, {4, 6, 9, 10}}. */
     static int[][] naturalRuns(int[] A) {
+        if (A.length == 0) {
+            return new int[][] {{}};
+        }
+
         int runs = 0;
-        for (int i = 1; i < A.length; i += 1) {
-            if (A[i] <= A[i - 1]) {
-                runs += 1;
-            }
-            if (i + 1 == A.length) {
+        for (int i = 0; i < A.length - 1; i += 1) {
+            if (A[i] >= A[i + 1]) {
                 runs += 1;
             }
         }
+        runs += 1;
 
         int[][] newArr = new int[runs][1];
-
-        int last = A[0];
         int k, j;
         k = j = 0;
         int lenRun = 1;
 
-        for (int i = 1; i < A.length; last = A[i], i += 1) {
-            if (A[i] > last) {
+        for (int i = 0; i < A.length - 1; i += 1) {
+            if (A[i] < A[i + 1]) {
                 lenRun += 1;
             } else {
                 newArr[j] = Utils.subarray(A, k, lenRun);
                 j += 1;
-                k += lenRun;
+                k = i + 1;
                 lenRun = 1;
             }
         }
