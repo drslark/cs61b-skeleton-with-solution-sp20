@@ -68,8 +68,9 @@ public class MatrixUtils {
                 if (min > options[1]) {
                     min = options[1];
                 }
-                if (min > options[2])
+                if (min > options[2]) {
                     min = options[2];
+                }
 
                 newM[i][j] += min;
             }
