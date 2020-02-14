@@ -65,8 +65,9 @@ public class MatrixUtils {
                 options[2] = get(newM, i - 1, j + 1);
 
                 double min = options[0];
-                if (min > options[1])
+                if (min > options[1]) {
                     min = options[1];
+                }
                 if (min > options[2])
                     min = options[2];
 
@@ -76,8 +77,8 @@ public class MatrixUtils {
         return newM;
     }
 
-    /** Gets the element at row r and column c of
-     *  matrix e.
+    /** Gets the element at row R and column C of
+     *  matrix E.
      *
      *  Returns Double.POSITIVE_INFINITY if matrix index
      *  is out of bounds.
@@ -126,8 +127,8 @@ public class MatrixUtils {
         return mT;
     }
 
-    /** Non-destructively creates a transposed matrix from m.
-     *  For any element at position (i, j) in m, return matrix has
+    /** Non-destructively creates a transposed matrix from M.
+     *  For any element at position (i, j) in M, return matrix has
      *  that element at position (j, i).
      */
     static double[][] transpose(double[][] m) {
@@ -171,7 +172,7 @@ public class MatrixUtils {
      */
 
     public static int[] findVerticalSeam(double[][] m) {
-        return null; //your code here
+        return null;
     }
 
     /** Returns the SEAM of M with the given ORIENTATION.
@@ -180,7 +181,7 @@ public class MatrixUtils {
      */
 
     public static int[] findSeam(double[][] m, Orientation orientation) {
-        return null; //your code here
+        return null;
     }
 
     /** does nothing. ARGS not used. use for whatever purposes you'd like */
