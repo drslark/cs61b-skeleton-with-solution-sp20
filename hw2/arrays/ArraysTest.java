@@ -1,12 +1,10 @@
 package arrays;
 
-import lists.IntList;
-import lists.IntListList;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 /** Tests for the Arrays class.
- *  @Amit Bhat
+ *  @author Amit Bhat
  */
 
 public class ArraysTest {

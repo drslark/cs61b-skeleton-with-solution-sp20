@@ -6,7 +6,7 @@ package arrays;
 /** HW #2 */
 
 /** Array utilities.
- *  @Amit Bhat
+ *  @author Amit Bhat
  */
 class Arrays {
 
@@ -34,7 +34,7 @@ class Arrays {
 
         int j = 0;
         for (int i = 0; i < A.length; i += 1) {
-            if ( !(start <= i && i < start + len) ) {
+            if (!(start <= i && i < start + len)) {
                 newArr[j] = A[i];
                 j += 1;
             }
@@ -51,10 +51,12 @@ class Arrays {
     static int[][] naturalRuns(int[] A) {
         int runs = 0;
         for (int i = 1; i < A.length; i += 1) {
-            if (A[i] <= A[i - 1])
+            if (A[i] <= A[i - 1]) {
                 runs += 1;
-            if (i + 1 == A.length)
+            }
+            if (i + 1 == A.length) {
                 runs += 1;
+            }
         }
 
         int[][] newArr = new int[runs][1];
