@@ -6,7 +6,7 @@ package lists;
 /** HW #2, Problem #1. */
 
 /** List problem.
- *  @Amit Bhat
+ *  @author Amit Bhat
  */
 class Lists {
 
@@ -31,8 +31,7 @@ class Lists {
         while (L != null) {
             if (L.head > last) {
                 numRun += 1;
-            }
-            else {
+            } else {
                 for (; numRun > 0; numRun -= 1) {
                     k = k.tail;
                 }
