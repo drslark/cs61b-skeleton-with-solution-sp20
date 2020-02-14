@@ -3,7 +3,7 @@ package image;
 /** Provides a variety of utilities for operating on matrices.
  *  All methods assume that the double[][] arrays provided are rectangular.
  *
- *  @author Josh Hug and YOU
+ *  @author Josh Hug and Amit Bhat
  */
 
 public class MatrixUtils {
@@ -55,7 +55,40 @@ public class MatrixUtils {
      */
 
     public static double[][] accumulateVertical(double[][] m) {
-        return null; //your code here
+        double[][] newM = copy(m);
+
+        for (int i = 1; i < newM.length; i += 1) {
+            for (int j = 0; j < newM[0].length; j += 1) {
+                double[] options = new double[3];
+                options[0] = get(newM, i - 1, j - 1);
+                options[1] = get(newM, i - 1, j);
+                options[2] = get(newM, i - 1, j + 1);
+
+                double min = options[0];
+                if (min > options[1])
+                    min = options[1];
+                if (min > options[2])
+                    min = options[2];
+
+                newM[i][j] += min;
+            }
+        }
+        return newM;
+    }
+
+    /** Gets the element at row r and column c of
+     *  matrix e.
+     *
+     *  Returns Double.POSITIVE_INFINITY if matrix index
+     *  is out of bounds.
+     */
+    static double get(double[][] e, int r, int c) {
+        if (0 <= r && r < e.length) {
+            if (0 <= c && c < e[0].length) {
+                return e[r][c];
+            }
+        }
+        return Double.POSITIVE_INFINITY;
     }
 
     /** Non-destructively accumulates a matrix M along the specified
@@ -82,7 +115,30 @@ public class MatrixUtils {
      */
 
     public static double[][] accumulate(double[][] m, Orientation orientation) {
-        return null; //your code here
+
+        if (orientation == Orientation.VERTICAL) {
+            return accumulateVertical(m);
+        }
+        double[][] mT = transpose(m);
+        mT = accumulateVertical(mT);
+        mT = transpose(mT);
+
+        return mT;
+    }
+
+    /** Non-destructively creates a transposed matrix from m.
+     *  For any element at position (i, j) in m, return matrix has
+     *  that element at position (j, i).
+     */
+    static double[][] transpose(double[][] m) {
+        double[][] mT = new double[m[0].length][m.length];
+
+        for (int r = 0; r < m.length; r += 1) {
+            for (int c = 0; c < m[0].length; c += 1) {
+                mT[c][r] = m[r][c];
+            }
+        }
+        return mT;
     }
 
     /** Finds the vertical seam VERTSEAM of the given matrix M.
