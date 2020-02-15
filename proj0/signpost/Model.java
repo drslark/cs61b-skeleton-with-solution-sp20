@@ -609,28 +609,69 @@ class Model implements Iterable<Model.Sq> {
             _unconnected += 1;
             next._predecessor = _successor = null;
             if (_sequenceNum == 0) {
-                // FIXME: If both this and next are now one-element groups,
-                //        release their former group and set both group
-                //        numbers to -1.
-                //        Otherwise, if either is now a one-element group, set
-                //        its group number to -1 without releasing the group
-                //        number.
-                //        Otherwise, the group has been split into two multi-
-                //        element groups.  Create a new group for next.
+                if (this.predecessor() == null && next.successor() == null) {
+                    releaseGroup(this.group());
+                    this._group = next._group = -1;
+                } else if (this.predecessor() != null && next.successor() == null) {
+                    next._group = -1;
+                } else if (this.predecessor() == null) {
+                    this._group = -1;
+                } else {
+                    next._group = newGroup();
+                }
             } else {
-                // FIXME: If neither this nor any square in its group that
-                //        precedes it has a fixed sequence number, set all
-                //        their sequence numbers to 0 and create a new group
-                //        for them if this has a current predecessor (other
-                //        set group to -1).
-                // FIXME: If neither next nor any square in its group that
-                //        follows it has a fixed sequence number, set all
-                //        their sequence numbers to 0 and create a new
-                //        group for them if next has a current successor
-                //        (otherwise set next's group to -1.)
+                boolean noBackFixed = true;
+                Sq k = this;
+                while (k != null) {
+                    if (k.hasFixedNum()) {
+                        noBackFixed = false;
+                        break;
+                    }
+                    k = k.predecessor();
+                }
+
+                if (this.predecessor() == null && noBackFixed) {
+                    this._sequenceNum = 0;
+                    this._group = -1;
+                } else if (noBackFixed) {
+                    Sq m = this;
+                    while (m != null) {
+                        m._sequenceNum = 0;
+                        m = m.predecessor();
+                    }
+                    this._head._group = newGroup();
+                }
+
+                boolean noFrontFixed = true;
+                Sq j = next;
+                while (j != null) {
+                    if (j.hasFixedNum()){
+                        noFrontFixed = false;
+                        break;
+                    }
+                    j = j.successor();
+                }
+
+                if (next.successor() == null && noFrontFixed) {
+                    next._sequenceNum = 0;
+                    next._group = -1;
+                } else if (noFrontFixed) {
+                    Sq m = next;
+                    while (m != null) {
+                        m._sequenceNum = 0;
+                        m = m.successor();
+                    }
+                    next._group = newGroup();
+                }
             }
-            // FIXME: Set the _head of next and all squares in its group to
-            //        next.
+
+            next._head = next;
+            Sq k = next;
+            k = k.successor();
+            while (k != null) {
+                k._head = k._predecessor.head();
+                k = k.successor();
+            }
         }
 
         @Override
