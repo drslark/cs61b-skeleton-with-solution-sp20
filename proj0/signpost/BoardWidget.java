@@ -303,7 +303,6 @@ class BoardWidget extends Pad {
     void update(Model model) {
         synchronized (this) {
             _model = new Model(model);
-            _model = model;  // FIXME: Remove this line.
             _dirBump = 0;
         }
 

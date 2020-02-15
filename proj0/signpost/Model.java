@@ -129,7 +129,7 @@ class Model implements Iterable<Model.Sq> {
 
         for (Sq square : _allSquares) {
             square._successors =
-                    _allSuccessors[square.x][square.y][square.direction()];
+                    allSuccessors(square.x, square.y, square.direction());
         }
         for (int i = 0; i < _allSquares.size(); i += 1) {
             for (int j = 0; j < _allSquares.size(); j += 1) {
@@ -152,27 +152,56 @@ class Model implements Iterable<Model.Sq> {
 
     /** Initializes a copy of MODEL. */
     Model(Model model) {
-        _width = model.width(); _height = model.height();
+        _width = model.width();
+        _height = model.height();
         _unconnected = model._unconnected;
         _solnNumToPlace = model._solnNumToPlace;
         _solution = model._solution;
         _usedGroups.addAll(model._usedGroups);
         _allSuccessors = model._allSuccessors;
 
-        // FIXME: Initialize _board and _allSquares to contain copies of the
-        //        the Sq objects in MODEL other than their _successor,
-        //        _predecessor, and _head fields (which can't necessarily be
-        //        set until all the Sq objects are first created.)
+        _board = new Sq[_width][_height];
+        int last = _width * _height;
 
-        // FIXME: Once all the new Sq objects are in place, fill in their
-        //        _successor, _predecessor, and _head fields.  For example,
-        //        if in MODEL, the _successor field of the Sq at
-        //        position (2, 3) pointed to the Sq in MODEL at position
-        //        (4, 1), then the Sq at position (2, 3) in this copy
-        //        will have a _successor field pointing to the Sq at
-        //        position (4, 1) in this copy.  Be careful NOT to have
-        //        any of these fields in the copy pointing at the old Sqs in
-        //        MODEL.
+        for (int i = 0; i < _width; i += 1) {
+            for (int j = 0; j < _width; j += 1) {
+                Sq square = model._board[i][j];
+                int x0 = square.x;
+                int y0 = square.y;
+                int dir = square.direction();
+                int sequenceNum = square.sequenceNum();
+                boolean fixed = square.hasFixedNum();
+                int group = square.group();
+                int sol = _solution[i][j];
+
+                Sq newSQ = new Sq(x0, y0, sequenceNum, fixed, dir, group);
+                _board[i][j] = newSQ;
+                _solnNumToPlace[sol - 1] = newSQ.pl;
+                _allSquares.add(newSQ);
+            }
+        }
+
+        for (Sq square : _allSquares) {
+            square._successors =
+                    allSuccessors(square.x, square.y, square.direction());
+        }
+        for (int i = 0; i < _allSquares.size(); i += 1) {
+            for (int j = 0; j < _allSquares.size(); j += 1) {
+                if (i == j) {
+                    continue;
+                }
+                for (Place x : _allSquares.get(i).successors()) {
+                    Sq square1 = _allSquares.get(j);
+                    if (x.equals(square1.pl)) {
+                        if (square1._predecessors == null) {
+                            square1._predecessors = new PlaceList();
+                        }
+                        square1._predecessors.add(x);
+                    }
+                }
+            }
+        }
+        _unconnected = last - 1;
     }
 
     /** Returns the width (number of columns of cells) of the board. */
