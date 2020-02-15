@@ -8,7 +8,7 @@ import static java.lang.Math.max;
 /** An (X, Y) position on a Signpost puzzle board.  We require that
  *  X, Y >= 0.  Each Place object is unique; no other has the same x and y
  *  values.  As a result, "==" may be used for comparisons.
- *  @author
+ *  @author Amit Bhat
  */
 class Place {
 
@@ -92,8 +92,24 @@ class Place {
      *  the lists of queen moves in directions 1-8). */
     static PlaceList[][][] successorCells(int width, int height) {
         PlaceList[][][] M = new PlaceList[width][height][9];
-
-        // FIXME
+        for (int x0 = 0; x0 < width; x0 += 1) {
+            for (int y0 = 0; y0 < height; y0 += 1) {
+                PlaceList[] places0 = M[x0][y0];
+                for (int dir = 0; dir <= 8; dir += 1) {
+                    places0[dir] = new PlaceList();
+                }
+                for (int x1 = 0; x1 < width; x1 += 1) {
+                    for (int y1 = 0; y1 < height; y1 += 1) {
+                        int dir = dirOf(x0, y0, x1, y1);
+                        if (dir != 0) {
+                            Place p = pl(x1, y1);
+                            places0[dir].add(p);
+                            places0[0].add(p);
+                        }
+                    }
+                }
+            }
+        }
         return M;
     }
 

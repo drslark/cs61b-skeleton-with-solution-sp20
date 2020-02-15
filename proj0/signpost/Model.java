@@ -1,5 +1,6 @@
 package signpost;
 
+import java.sql.SQLClientInfoException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Formatter;
@@ -64,7 +65,7 @@ import static signpost.Utils.*;
  *  0) and all cells with fixed sequence numbers appear at the
  *  corresponding position in that sequence.
  *
- *  @author
+ *  @author Amit Bhat
  */
 class Model implements Iterable<Model.Sq> {
 
@@ -520,8 +521,38 @@ class Model implements Iterable<Model.Sq> {
          *    they are not part of the same connected sequence.
          */
         boolean connectable(Sq s1) {
-            // FIXME
-            return true;
+            this._successors =
+                   Place.successorCells(width(), height())[this.x][this.y][this.direction()];
+
+            boolean inRange = false;
+            for (Place x : this.successors()) {
+                if (s1.pl.equals(x)) {
+                    inRange = true;
+                    break;
+                }
+            }
+
+            boolean ableConnect = s1.predecessor() == null
+                    && this.successor() == null
+                    && !(s1._hasFixedNum && s1.sequenceNum() == 1)
+                    && !(this._hasFixedNum && s1.sequenceNum() == size());
+
+
+            boolean correctSeq = true;
+            if (this.sequenceNum() > 0 && s1.sequenceNum() > 0) {
+                if (this.sequenceNum() != s1.sequenceNum() - 1) {
+                    correctSeq = false;
+                }
+            }
+
+            boolean notConnected = true;
+            if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) {
+                if (!(s1.group() != this.group() || s1.group() == -1)) {
+                    notConnected = false;
+                }
+            }
+
+            return inRange && ableConnect && correctSeq && notConnected;
         }
 
         /** Connect this square to S1, if both are connectable; otherwise do
@@ -535,21 +566,36 @@ class Model implements Iterable<Model.Sq> {
 
             _unconnected -= 1;
 
-            // FIXME: Connect this square to its successor:
-            //        + Set this square's _successor field and S1's
-            //          _predecessor field.
-            //        + If this square has a number, number all its successors
-            //          accordingly (if needed).
-            //        + If S1 is numbered, number this square and its
-            //          predecessors accordingly (if needed).
-            //        + Set the _head fields of this square's successors this
-            //          square's _head.
-            //        + If either of this square or S1 used to be unnumbered
-            //          and is now numbered, release its group of whichever
-            //          was unnumbered, so that it can be reused.
-            //        + If both this square and S1 are unnumbered, set the
-            //          group of this square's head to the result of joining
-            //          the two groups.
+            this._successor = s1;
+            s1._predecessor = this;
+
+            if (this.sequenceNum() > 0) {
+                Sq k = s1;
+                while (k != null) {
+                    k._sequenceNum = k._predecessor.sequenceNum() + 1;
+                    k = k.successor();
+                }
+            } else if (s1.sequenceNum() > 0) {
+                Sq k = this;
+                while (k != null) {
+                    k._sequenceNum = k._successor.sequenceNum() - 1;
+                    k = k.predecessor();
+                }
+            }
+
+            Sq k = s1;
+            while (k != null) {
+                k._head = k._predecessor.head();
+                k = k.successor();
+            }
+
+            if (this.sequenceNum() == 0 && this.successor().sequenceNum() == 0) {
+                this._head._group = joinGroups(this.group(), sgroup);
+            } else if (this.sequenceNum() == 0 && s1.sequenceNum() != 0) {
+                releaseGroup(this.group());
+            } else if (this.sequenceNum() != 0 && s1.sequenceNum() == 0) {
+                releaseGroup(sgroup);
+            }
 
             return true;
         }
