@@ -164,7 +164,7 @@ class Model implements Iterable<Model.Sq> {
         int last = _width * _height;
 
         for (int i = 0; i < _width; i += 1) {
-            for (int j = 0; j < _width; j += 1) {
+            for (int j = 0; j < _height; j += 1) {
                 Sq square = model._board[i][j];
                 int x0 = square.x;
                 int y0 = square.y;
@@ -297,13 +297,39 @@ class Model implements Iterable<Model.Sq> {
      *  unconnected and are separated by a queen move.  Returns true iff
      *  any changes were made. */
     boolean autoconnect() {
-        return false; // FIXME
+        boolean changed = false;
+        for (int i = 0; i < _board.length; i += 1) {
+            for (int j = 0; j < _board[0].length; j += 1) {
+                Sq square1 = _board[i][j];
+                int square1Num = square1.sequenceNum();
+                if (square1Num != 0) {
+                    for (int m = 0; m < _board.length; m += 1) {
+                        for (int n = 0; n < _board[0].length; n += 1) {
+                            Sq square2 = _board[m][n];
+                            int square2Num = square2.sequenceNum();
+                            if (square1Num + 1 == square2Num) {
+                                if (square1.connect(square2)) {
+                                    changed = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return changed;
     }
+
+
 
     /** Sets the numbers in this board's squares to the solution from which
      *  this board was last initialized by the constructor. */
     void solve() {
-        // FIXME
+        for (int i = 0; i < _solnNumToPlace.length; i += 1) {
+            Sq square = solnNumToSq(i);
+            square._sequenceNum = i + 1;
+        }
+        autoconnect();
         _unconnected = 0;
     }
 
@@ -599,7 +625,7 @@ class Model implements Iterable<Model.Sq> {
             boolean ableConnect = s1.predecessor() == null
                     && this.successor() == null
                     && !(s1._hasFixedNum && s1.sequenceNum() == 1)
-                    && !(this._hasFixedNum && s1.sequenceNum() == size());
+                    && !(this._hasFixedNum && this.sequenceNum() == size());
 
 
             boolean correctSeq = true;
