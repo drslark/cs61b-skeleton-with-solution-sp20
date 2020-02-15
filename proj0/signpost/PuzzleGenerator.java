@@ -54,15 +54,9 @@ class PuzzleGenerator implements PuzzleSource {
         _vals[x1][y1] = last;
         // FIXME: Remove the following return statement and uncomment the
         //        next three lines.
-        return new int[][] {
-            { 14, 9, 8, 1 },
-            { 15, 10, 7, 2 },
-            { 13, 11, 6, 3 },
-            { 16, 12, 5, 4 }
-        };
         //boolean ok = findSolutionPathFrom(x0, y0);
         //assert ok;
-        //return _vals;
+        return _vals;
     }
 
     /** Try to find a random path of queen moves through VALS from (X0, Y0)

@@ -91,43 +91,62 @@ class Model implements Iterable<Model.Sq> {
         _solution = new int[_width][_height];
         deepCopy(solution, _solution);
 
-        // DUMMY SETUP
-        // This is a particular puzzle provided as a filler until the
-        // puzzle-generation software is complete.
-        // FIXME: Remove everything down to and including
-        // "// END DUMMY SETUP".
-        _board = new Sq[][] {
-            { new Sq(0, 0, 0, false, 2, -1), new Sq(0, 1, 0, false, 2, -1),
-              new Sq(0, 2, 0, false, 4, -1), new Sq(0, 3, 1, true, 2, 0) },
-            { new Sq(1, 0, 0, false, 2, -1), new Sq(1, 1, 0, false, 2, -1),
-              new Sq(1, 2, 0, false, 6, -1), new Sq(1, 3, 0, false, 2, -1) },
-            { new Sq(2, 0, 0, false, 6, -1), new Sq(2, 1, 0, false, 2, -1),
-              new Sq(2, 2, 0, false, 6, -1), new Sq(2, 3, 0, false, 2, -1) },
-            { new Sq(3, 0, 16, true, 0, 0), new Sq(3, 1, 0, false, 5, -1),
-              new Sq(3, 2, 0, false, 6, -1), new Sq(3, 3, 0, false, 4, -1) }
-        };
-        for (Sq[] col: _board) {
-            for (Sq sq : col) {
-                _allSquares.add(sq);
+        _solnNumToPlace = new Place[last];
+        _board = new Sq[_width][_height];
+
+        for (int i = 0; i < _solution.length; i += 1) {
+            for (int j = 0; j < _solution[0].length; j += 1) {
+                int sequenceNum = 0;
+                boolean fixed = false;
+                int group = -1;
+                int sol = _solution[i][j];
+
+                if (sol == 1) {
+                   sequenceNum = 1;
+                   fixed = true;
+                   group = 0;
+                } else if (sol == last) {
+                   sequenceNum = last;
+                   fixed = true;
+                   group = 0;
+                }
+
+                int x0 = i;
+                int y0 = j;
+                int dir = arrowDirection(x0, y0);
+
+                Sq newSQ = new Sq(x0, y0, sequenceNum, fixed, dir, group);
+                _board[i][j] = newSQ;
+                _solnNumToPlace[sol - 1] = newSQ.pl;
+                _allSquares.add(newSQ);
             }
         }
-        // END DUMMY SETUP
+        for (Place x : _solnNumToPlace) {
+            if (x == null) {
+                throw new IllegalArgumentException("not enough solutions");
+            }
+        }
 
-        // FIXME: Initialize _board so that _board[x][y] contains the Sq object
-        //        representing the contents at cell (x, y), _allSquares
-        //        contains the list of all Sq objects on the board, and
-        //        _solnNumToPlace[k] contains the Place in _solution that
-        //        contains sequence number k.  Check that all numbers from
-        //        1 - last appear; else throw IllegalArgumentException (see
-        //        badArgs utility).
-
-        // FIXME: For each Sq object on the board, set its _successors list
-        //        to the list of locations of all cells that it might
-        //        connect to (i.e., all cells that are a queen move away
-        //        in the direction of its arrow).
-        //        Likewise, set its _predecessors list to the list of
-        //        all cells that might connect to it.
-
+        for (Sq square : _allSquares) {
+            square._successors =
+                    _allSuccessors[square.x][square.y][square.direction()];
+        }
+        for (int i = 0; i < _allSquares.size(); i += 1) {
+            for (int j = 0; j < _allSquares.size(); j += 1) {
+                if (i == j) {
+                    continue;
+                }
+                for (Place x : _allSquares.get(i).successors()) {
+                    Sq square1 = _allSquares.get(j);
+                    if (x.equals(square1.pl)) {
+                        if (square1._predecessors == null) {
+                            square1._predecessors = new PlaceList();
+                        }
+                        square1._predecessors.add(x);
+                    }
+                }
+            }
+        }
         _unconnected = last - 1;
     }
 
@@ -263,8 +282,24 @@ class Model implements Iterable<Model.Sq> {
      *  successor, or 0 if it has none. */
     private int arrowDirection(int x, int y) {
         int seq0 = _solution[x][y];
-        // FIXME
-        return 0;
+        int seq1 = seq0 + 1;
+
+        int x1, y1;
+        x1 = y1 = -1;
+
+        for (int i = 0; i < _solution.length; i += 1) {
+            for (int j = 0; j < _solution[0].length; j += 1) {
+                if (_solution[i][j] == seq1) {
+                    x1 = i;
+                    y1 = j;
+                    break;
+                }
+            }
+            if (x1 != -1) {
+                break;
+            }
+        }
+        return Place.dirOf(x, y, x1, y1);
     }
 
     /** Return a new, currently unused group number > 0.  Selects the
@@ -563,7 +598,6 @@ class Model implements Iterable<Model.Sq> {
                 return false;
             }
             int sgroup = s1.group();
-
             _unconnected -= 1;
 
             this._successor = s1;
