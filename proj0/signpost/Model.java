@@ -1,6 +1,5 @@
 package signpost;
 
-import java.sql.SQLClientInfoException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Formatter;
@@ -86,14 +85,11 @@ class Model implements Iterable<Model.Sq> {
         _width = solution.length; _height = solution[0].length;
         int last = _width * _height;
         BitSet allNums = new BitSet();
-
         _allSuccessors = Place.successorCells(_width, _height);
         _solution = new int[_width][_height];
         deepCopy(solution, _solution);
-
         _solnNumToPlace = new Place[last];
         _board = new Sq[_width][_height];
-
         for (int i = 0; i < _solution.length; i += 1) {
             for (int j = 0; j < _solution[0].length; j += 1) {
                 int sequenceNum = 0;
@@ -102,19 +98,13 @@ class Model implements Iterable<Model.Sq> {
                 int sol = _solution[i][j];
 
                 if (sol == 1) {
-                   sequenceNum = 1;
-                   fixed = true;
-                   group = 0;
+                    sequenceNum = 1; fixed = true; group = 0;
                 } else if (sol == last) {
-                   sequenceNum = last;
-                   fixed = true;
-                   group = 0;
+                    sequenceNum = last; fixed = true; group = 0;
                 }
-
                 int x0 = i;
                 int y0 = j;
                 int dir = arrowDirection(x0, y0);
-
                 Sq newSQ = new Sq(x0, y0, sequenceNum, fixed, dir, group);
                 _board[i][j] = newSQ;
                 _solnNumToPlace[sol - 1] = newSQ.pl;
@@ -126,7 +116,6 @@ class Model implements Iterable<Model.Sq> {
                 throw new IllegalArgumentException("not enough solutions");
             }
         }
-
         for (Sq square : _allSquares) {
             square._successors =
                     allSuccessors(square.x, square.y, square.direction());
@@ -142,7 +131,7 @@ class Model implements Iterable<Model.Sq> {
                         if (square1._predecessors == null) {
                             square1._predecessors = new PlaceList();
                         }
-                        square1._predecessors.add(x);
+                        square1._predecessors.add(_allSquares.get(i).pl);
                     }
                 }
             }
@@ -259,7 +248,7 @@ class Model implements Iterable<Model.Sq> {
     /** Return the position of the cell with sequence number N in this board's
      *  solution. */
     Place solnNumToPlace(int n) {
-        return _solnNumToPlace[n];
+        return _solnNumToPlace[n - 1];
     }
 
     /** Return the Sq with sequence number N in this board's solution. */
@@ -326,7 +315,7 @@ class Model implements Iterable<Model.Sq> {
      *  this board was last initialized by the constructor. */
     void solve() {
         for (int i = 0; i < _solnNumToPlace.length; i += 1) {
-            Sq square = solnNumToSq(i);
+            Sq square = solnNumToSq(i + 1);
             square._sequenceNum = i + 1;
         }
         autoconnect();
@@ -612,11 +601,11 @@ class Model implements Iterable<Model.Sq> {
          */
         boolean connectable(Sq s1) {
             this._successors =
-                   Place.successorCells(width(), height())[this.x][this.y][this.direction()];
+                   Place.successorCells(width(), height())[x][y][direction()];
 
             boolean inRange = false;
-            for (Place x : this.successors()) {
-                if (s1.pl.equals(x)) {
+            for (Place place : this.successors()) {
+                if (s1.pl.equals(place)) {
                     inRange = true;
                     break;
                 }
@@ -654,7 +643,6 @@ class Model implements Iterable<Model.Sq> {
             }
             int sgroup = s1.group();
             _unconnected -= 1;
-
             this._successor = s1;
             s1._predecessor = this;
 
@@ -677,8 +665,8 @@ class Model implements Iterable<Model.Sq> {
                 k._head = k._predecessor.head();
                 k = k.successor();
             }
-
-            if (this.sequenceNum() == 0 && this.successor().sequenceNum() == 0) {
+            if (this.sequenceNum() == 0
+                    && this.successor().sequenceNum() == 0) {
                 this._head._group = joinGroups(this.group(), sgroup);
             } else if (this.sequenceNum() == 0 && s1.sequenceNum() != 0) {
                 releaseGroup(this.group());
@@ -701,7 +689,8 @@ class Model implements Iterable<Model.Sq> {
                 if (this.predecessor() == null && next.successor() == null) {
                     releaseGroup(this.group());
                     this._group = next._group = -1;
-                } else if (this.predecessor() != null && next.successor() == null) {
+                } else if (this.predecessor() != null
+                        && next.successor() == null) {
                     next._group = -1;
                 } else if (this.predecessor() == null) {
                     this._group = -1;
@@ -718,7 +707,6 @@ class Model implements Iterable<Model.Sq> {
                     }
                     k = k.predecessor();
                 }
-
                 if (this.predecessor() == null && noBackFixed) {
                     this._sequenceNum = 0;
                     this._group = -1;
@@ -734,13 +722,12 @@ class Model implements Iterable<Model.Sq> {
                 boolean noFrontFixed = true;
                 Sq j = next;
                 while (j != null) {
-                    if (j.hasFixedNum()){
+                    if (j.hasFixedNum()) {
                         noFrontFixed = false;
                         break;
                     }
                     j = j.successor();
                 }
-
                 if (next.successor() == null && noFrontFixed) {
                     next._sequenceNum = 0;
                     next._group = -1;
@@ -753,7 +740,6 @@ class Model implements Iterable<Model.Sq> {
                     next._group = newGroup();
                 }
             }
-
             next._head = next;
             Sq k = next;
             k = k.successor();

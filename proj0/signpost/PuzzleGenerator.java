@@ -1,5 +1,6 @@
 package signpost;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
@@ -8,7 +9,7 @@ import static signpost.Place.PlaceList;
 import static signpost.Utils.*;
 
 /** A creator of random Signpost puzzles.
- *  @author
+ *  @author Amit Bhat
  */
 class PuzzleGenerator implements PuzzleSource {
 
@@ -22,9 +23,8 @@ class PuzzleGenerator implements PuzzleSource {
     public Model getPuzzle(int width, int height, boolean allowFreeEnds) {
         Model model =
             new Model(makePuzzleSolution(width, height, allowFreeEnds));
-        // FIXME: Remove the "//" on the following two lines.
-        // makeSolutionUnique(model);
-        // model.autoconnect();
+        makeSolutionUnique(model);
+        model.autoconnect();
         return model;
     }
 
@@ -52,10 +52,8 @@ class PuzzleGenerator implements PuzzleSource {
         }
         _vals[x0][y0] = 1;
         _vals[x1][y1] = last;
-        // FIXME: Remove the following return statement and uncomment the
-        //        next three lines.
-        //boolean ok = findSolutionPathFrom(x0, y0);
-        //assert ok;
+        boolean ok = findSolutionPathFrom(x0, y0);
+        assert ok;
         return _vals;
     }
 
@@ -128,8 +126,26 @@ class PuzzleGenerator implements PuzzleSource {
      *  numbered square in the proper direction from START (with the next
      *  number in sequence). */
     static Sq findUniqueSuccessor(Model model, Sq start) {
-        // FIXME: Fill in to satisfy the comment.
-        return null;
+        PlaceList successors = start.successors();
+        Sq unique = null;
+        ArrayList<Sq> potentialSq = new ArrayList<Sq>();
+        for (int i = 0; i < successors.size(); i += 1) {
+            Place successorPlace = successors.get(i);
+            Sq square1 = model.get(successorPlace);
+            if (start.connectable(square1)) {
+                potentialSq.add(square1);
+            }
+        }
+        if (potentialSq.size() == 1) {
+            unique = potentialSq.get(0);
+        } else {
+            for (Sq x : potentialSq) {
+                if (start.sequenceNum() + 1 == x.sequenceNum()) {
+                    unique = x;
+                }
+            }
+        }
+        return unique;
     }
 
     /** Make all unique backward connections in MODEL (those in which there is
@@ -157,8 +173,20 @@ class PuzzleGenerator implements PuzzleSource {
      *  the only unconnected predecessor.  This is because findUniqueSuccessor
      *  already finds the other cases of numbered, unconnected cells. */
     static Sq findUniquePredecessor(Model model, Sq end) {
-        // FIXME: Replace the following to satisfy the comment.
-        return null;
+        PlaceList predecessors = end.predecessors();
+        Sq unique = null;
+        ArrayList<Sq> potentialSq = new ArrayList<Sq>();
+        for (int i = 0; i < predecessors.size(); i += 1) {
+            Place predecessorPlace = predecessors.get(i);
+            Sq square1 = model.get(predecessorPlace);
+            if (square1.connectable(end)) {
+                potentialSq.add(square1);
+            }
+        }
+        if (potentialSq.size() == 1) {
+            unique = potentialSq.get(0);
+        }
+        return unique;
     }
 
     /** Remove all links in MODEL and unfix numbers (other than the first and
@@ -171,6 +199,7 @@ class PuzzleGenerator implements PuzzleSource {
             changed = false;
             for (Sq sq : model) {
                 if (sq.hasFixedNum() && sq.sequenceNum() != 1
+                    && sq.sequenceNum() != w * h
                     && sq.direction() != 0) {
                     model.restart();
                     int n = sq.sequenceNum();
