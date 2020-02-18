@@ -139,9 +139,11 @@ class PuzzleGenerator implements PuzzleSource {
         if (potentialSq.size() == 1) {
             unique = potentialSq.get(0);
         } else {
-            for (Sq x : potentialSq) {
-                if (start.sequenceNum() + 1 == x.sequenceNum()) {
-                    unique = x;
+            if (start.sequenceNum() != 0) {
+                for (Sq x : potentialSq) {
+                    if (start.sequenceNum() + 1 == x.sequenceNum()) {
+                        unique = x;
+                    }
                 }
             }
         }

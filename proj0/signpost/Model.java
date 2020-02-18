@@ -309,8 +309,6 @@ class Model implements Iterable<Model.Sq> {
         return changed;
     }
 
-
-
     /** Sets the numbers in this board's squares to the solution from which
      *  this board was last initialized by the constructor. */
     void solve() {
@@ -475,6 +473,10 @@ class Model implements Iterable<Model.Sq> {
         /** Fix this square's current sequence number at N>0.  It is
          *  an error if this square's number is not initially 0 or N. */
         void setFixedNum(int n) {
+            if (_sequenceNum != n && !hasFixedNum()) {
+                _sequenceNum = 0;
+            }
+
             if (n == 0 || (_sequenceNum != 0 && _sequenceNum != n)) {
                 throw badArgs("sequence number may not be fixed");
             }
@@ -616,7 +618,6 @@ class Model implements Iterable<Model.Sq> {
                     && !(s1._hasFixedNum && s1.sequenceNum() == 1)
                     && !(this._hasFixedNum && this.sequenceNum() == size());
 
-
             boolean correctSeq = true;
             if (this.sequenceNum() > 0 && s1.sequenceNum() > 0) {
                 if (this.sequenceNum() != s1.sequenceNum() - 1) {
@@ -643,28 +644,8 @@ class Model implements Iterable<Model.Sq> {
             }
             int sgroup = s1.group();
             _unconnected -= 1;
-            this._successor = s1;
-            s1._predecessor = this;
+            this._successor = s1; s1._predecessor = this;
 
-            if (this.sequenceNum() > 0) {
-                Sq k = s1;
-                while (k != null) {
-                    k._sequenceNum = k._predecessor.sequenceNum() + 1;
-                    k = k.successor();
-                }
-            } else if (s1.sequenceNum() > 0) {
-                Sq k = this;
-                while (k != null) {
-                    k._sequenceNum = k._successor.sequenceNum() - 1;
-                    k = k.predecessor();
-                }
-            }
-
-            Sq k = s1;
-            while (k != null) {
-                k._head = k._predecessor.head();
-                k = k.successor();
-            }
             if (this.sequenceNum() == 0
                     && this.successor().sequenceNum() == 0) {
                 this._head._group = joinGroups(this.group(), sgroup);
@@ -672,6 +653,20 @@ class Model implements Iterable<Model.Sq> {
                 releaseGroup(this.group());
             } else if (this.sequenceNum() != 0 && s1.sequenceNum() == 0) {
                 releaseGroup(sgroup);
+            }
+
+            if (this.sequenceNum() > 0) {
+                for (Sq k = s1; k != null; k = k.successor()) {
+                    k._sequenceNum = k._predecessor.sequenceNum() + 1;
+                }
+            } else if (s1.sequenceNum() > 0) {
+                for (Sq k = this; k != null; k = k.predecessor()) {
+                    k._sequenceNum = k._successor.sequenceNum() - 1;
+                }
+            }
+
+            for (Sq k = s1; k != null; k = k.successor()) {
+                k._head = k._predecessor.head();
             }
 
             return true;
@@ -684,68 +679,54 @@ class Model implements Iterable<Model.Sq> {
                 return;
             }
             _unconnected += 1;
-            next._predecessor = _successor = null;
+            next._predecessor = null; this._successor = null;
             if (_sequenceNum == 0) {
                 if (this.predecessor() == null && next.successor() == null) {
-                    releaseGroup(this.group());
-                    this._group = next._group = -1;
+                    releaseGroup(this.group()); this._group = next._group = -1;
                 } else if (this.predecessor() != null
                         && next.successor() == null) {
                     next._group = -1;
                 } else if (this.predecessor() == null) {
-                    this._group = -1;
+                    next._group = this.group(); this._group = -1;
                 } else {
                     next._group = newGroup();
                 }
             } else {
                 boolean noBackFixed = true;
-                Sq k = this;
-                while (k != null) {
+                for (Sq k = this; k != null; k = k.predecessor()) {
                     if (k.hasFixedNum()) {
                         noBackFixed = false;
                         break;
                     }
-                    k = k.predecessor();
                 }
                 if (this.predecessor() == null && noBackFixed) {
-                    this._sequenceNum = 0;
-                    this._group = -1;
+                    this._sequenceNum = 0; this._group = -1;
                 } else if (noBackFixed) {
-                    Sq m = this;
-                    while (m != null) {
+                    for (Sq m = this; m != null; m = m.predecessor()) {
                         m._sequenceNum = 0;
-                        m = m.predecessor();
                     }
                     this._head._group = newGroup();
                 }
-
                 boolean noFrontFixed = true;
-                Sq j = next;
-                while (j != null) {
+                for (Sq j = next; j != null; j = j.successor()) {
                     if (j.hasFixedNum()) {
                         noFrontFixed = false;
                         break;
                     }
-                    j = j.successor();
                 }
                 if (next.successor() == null && noFrontFixed) {
                     next._sequenceNum = 0;
                     next._group = -1;
                 } else if (noFrontFixed) {
-                    Sq m = next;
-                    while (m != null) {
+                    for (Sq m = next; m != null; m = m.successor()) {
                         m._sequenceNum = 0;
-                        m = m.successor();
                     }
                     next._group = newGroup();
                 }
             }
             next._head = next;
-            Sq k = next;
-            k = k.successor();
-            while (k != null) {
+            for (Sq k = next.successor(); k != null; k = k.successor()) {
                 k._head = k._predecessor.head();
-                k = k.successor();
             }
         }
 
