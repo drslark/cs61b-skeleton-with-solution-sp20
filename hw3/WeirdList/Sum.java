@@ -3,12 +3,16 @@
  * @author Amit Bhat
  */
 public class Sum implements IntUnaryFunction {
+
+    /** The sum of all arguments passed into apply. */
     private int _sum;
 
+    /** A new Sum whose sum is 0. */
     public Sum() {
         _sum = 0;
     }
 
+    /** Returns the value of _sum. */
     public int getSum() {
         return _sum;
     }

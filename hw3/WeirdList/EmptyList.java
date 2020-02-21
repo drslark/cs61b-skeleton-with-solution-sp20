@@ -3,7 +3,8 @@
  */
 public class EmptyList extends WeirdList {
 
-    public EmptyList(int head, WeirdList tail){
+    /** Creates a new EmptyList with head HEAD and tail TAIL. */
+    public EmptyList(int head, WeirdList tail) {
         super(head, tail);
     }
 

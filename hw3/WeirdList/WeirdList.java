@@ -5,7 +5,10 @@ public class WeirdList {
     /** The empty sequence of integers. */
     public static final WeirdList EMPTY = new EmptyList(0, null);
 
+    /** The first element in the sequence of integers. */
     private int _head;
+
+    /** The rest of the sequence of integers. */
     private WeirdList _tail;
 
     /** A new WeirdList whose head is HEAD and tail is TAIL. */
