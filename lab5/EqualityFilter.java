@@ -7,15 +7,22 @@ public class EqualityFilter extends TableFilter {
 
     public EqualityFilter(Table input, String colName, String match) {
         super(input);
-        // FIXME: Add your code here.
+        _colName = colName;
+        _match = match;
 
     }
 
     @Override
     protected boolean keep() {
-        // FIXME: Replace this line with your code.
-        return false;
+        boolean keep = false;
+        int index = this.headerList().indexOf(_colName);
+        String item = candidateNext().getValue(index);
+        if (item.equals(_match)) {
+            keep = true;
+        }
+        return keep;
     }
 
-    // FIXME: Add instance variables?
+    private String _colName;
+    private String _match;
 }
