@@ -12,13 +12,22 @@ public class TrReader extends Reader {
      *  FROM.charAt(i) to TO.charAt(i), for all i, leaving other characters
      *  in STR unchanged.  FROM and TO must have the same length. */
 
+    /** The reader used by the TrReader. */
     private Reader _str;
+
+    /** The string containing characters that are going to be translated. */
     private String _from;
+
+    /** The string containing the new characters that characters in _from are
+     *  translated to. */
     private String _to;
 
+
+    /** A new TrReader with reader STR, from string FROM, and to string TO. */
     public TrReader(Reader str, String from, String to) {
         if (from.length() != to.length()) {
-            throw new IllegalArgumentException("from and to must be same length");
+            String message = "from and to must be same length";
+            throw new IllegalArgumentException(message);
         }
         _str = str;
         _from = from;

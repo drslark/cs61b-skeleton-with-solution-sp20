@@ -1,6 +1,3 @@
-import java.io.FileReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.io.IOException;
 
 import org.junit.Test;
@@ -11,7 +8,6 @@ import ucb.junit.textui;
 /** Test of the Translate class.
  *  @author Amit Bhat
  */
-
 public class TranslateTest {
 
     @Test
