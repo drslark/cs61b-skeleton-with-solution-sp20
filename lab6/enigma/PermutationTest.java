@@ -119,7 +119,7 @@ public abstract class PermutationTest {
         assertEquals(1, c.permute(2));
         assertEquals(0, c.permute(4));
         assertEquals(4, c.permute(-3));
-        assertEquals(0, c.permute(17));
+        assertEquals(5, c.permute(17));
 
         Permutation d = getNewPermutation("(F)", getNewAlphabet("F"));
         assertEquals(0, d.permute(0));
@@ -132,9 +132,9 @@ public abstract class PermutationTest {
         assertEquals('Z', a.permute('Z'));
 
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
-        assertEquals('X', a.permute('A'));
-        assertEquals('A', a.permute('W'));
-        assertEquals('B', a.permute('B'));
+        assertEquals('X', b.permute('A'));
+        assertEquals('A', b.permute('W'));
+        assertEquals('B', b.permute('B'));
 
         Permutation c = getNewPermutation("(DEA) (BC) (F)", getNewAlphabet("ABCDEF"));
         assertEquals('D', c.permute('A'));
@@ -157,8 +157,8 @@ public abstract class PermutationTest {
 
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
         assertEquals(0, b.invert(23));
-        assertEquals(22, b.invert(16));
-        assertEquals(23, b.invert(-26));
+        assertEquals(23, b.invert(16));
+        assertEquals(22, b.invert(-26));
         assertEquals(15, b.invert(67));
 
         Permutation c = getNewPermutation("(DEA) (BC) (F)", getNewAlphabet("ABCDEF"));
