@@ -85,7 +85,7 @@ public abstract class PermutationTest {
     @Test
     public void testAlphabet() {
         Alphabet a = getNewAlphabet("XYZ");
-        Permutation perm = getNewPermutation("", getNewAlphabet("XYZ"));
+        Permutation perm = getNewPermutation("", a);
         assertEquals(a, perm.alphabet());
     }
 
@@ -94,103 +94,103 @@ public abstract class PermutationTest {
         Permutation a = getNewPermutation("", getNewAlphabet("XYZ"));
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
         Permutation c = getNewPermutation("(DEA) (BC) (F)", getNewAlphabet("ABCDEF"));
-        assertEquals(a.size(), 3);
-        assertEquals(b.size(), 26);
-        assertEquals(c.size(), 6);
+        assertEquals(3, a.size());
+        assertEquals(26, b.size());
+        assertEquals(6, c.size());
     }
 
     @Test
     public void testPermuteInt() {
         Permutation a = getNewPermutation("", getNewAlphabet("XYZ"));
-        assertEquals(a.permute(0), 0);
-        assertEquals(a.permute(1), 1);
-        assertEquals(a.permute(-3), 0);
-        assertEquals(a.permute(14), 2);
+        assertEquals(0, a.permute(0));
+        assertEquals(1, a.permute(1));
+        assertEquals(0, a.permute(-3));
+        assertEquals(2, a.permute(12));
 
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
-        assertEquals(b.permute(0), 23);
-        assertEquals(b.permute(23), 16);
-        assertEquals(b.permute(-10), 22);
-        assertEquals(b.permute(67), 15);
+        assertEquals(23, b.permute(0));
+        assertEquals(16, b.permute(23));
+        assertEquals(22, b.permute(-10));
+        assertEquals(15, b.permute(67));
 
         Permutation c = getNewPermutation("(DEA) (BC) (F)", getNewAlphabet("ABCDEF"));
-        assertEquals(c.permute(0), 3);
-        assertEquals(c.permute(5), 5);
-        assertEquals(c.permute(2), 1);
-        assertEquals(c.permute(4), 0);
-        assertEquals(c.permute(-3), 4);
-        assertEquals(c.permute(17), 0);
+        assertEquals(3, c.permute(0));
+        assertEquals(5, c.permute(5));
+        assertEquals(1, c.permute(2));
+        assertEquals(0, c.permute(4));
+        assertEquals(4, c.permute(-3));
+        assertEquals(0, c.permute(17));
 
         Permutation d = getNewPermutation("(F)", getNewAlphabet("F"));
-        assertEquals(d.permute(0), 0);
+        assertEquals(0, d.permute(0));
     }
 
     @Test
     public void testPermuteChar() {
         Permutation a = getNewPermutation("", getNewAlphabet("XYZ"));
-        assertEquals(a.permute('X'), 'X');
-        assertEquals(a.permute('Z'), 'Z');
+        assertEquals('X', a.permute('X'));
+        assertEquals('Z', a.permute('Z'));
 
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
-        assertEquals(b.permute('A'), 'X');
-        assertEquals(b.permute('W'), 'A');
-        assertEquals(b.permute('B'), 'B');
+        assertEquals('X', a.permute('A'));
+        assertEquals('A', a.permute('W'));
+        assertEquals('B', a.permute('B'));
 
         Permutation c = getNewPermutation("(DEA) (BC) (F)", getNewAlphabet("ABCDEF"));
-        assertEquals(c.permute('A'), 'D');
-        assertEquals(c.permute('B'), 'C');
-        assertEquals(c.permute('F'), 'F');
-        assertEquals(c.permute('F'), 'A');
+        assertEquals('D', c.permute('A'));
+        assertEquals('C', c.permute('B'));
+        assertEquals('F', c.permute('F'));
+        assertEquals('A', c.permute('E'));
 
         Permutation d = getNewPermutation("(F)", getNewAlphabet("F"));
-        assertEquals(d.permute('F'), 'F');
+        assertEquals('F', d.permute('F'));
     }
 
     @Test
     public void testInvertInt() {
         Permutation a = getNewPermutation("", getNewAlphabet("XYZ"));
-        assertEquals(a.invert(0), 0);
-        assertEquals(a.invert(1), 1);
-        assertEquals(a.invert(-3), 0);
-        assertEquals(a.invert(14), 2);
+        assertEquals(0, a.invert(0));
+        assertEquals(1, a.invert(1));
+        assertEquals(0, a.invert(-3));
+        assertEquals(2, a.invert(14));
+
 
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
-        assertEquals(b.invert(23), 0);
-        assertEquals(b.invert(16), 23);
-        assertEquals(b.invert(-26), 22);
-        assertEquals(b.invert(67), 15);
+        assertEquals(0, b.invert(23));
+        assertEquals(23, b.invert(16));
+        assertEquals(23, b.invert(-26));
+        assertEquals(15, b.invert(67));
 
         Permutation c = getNewPermutation("(DEA) (BC) (F)", getNewAlphabet("ABCDEF"));
-        assertEquals(c.invert(3), 0);
-        assertEquals(c.invert(5), 5);
-        assertEquals(c.invert(2), 1);
-        assertEquals(c.invert(3), 0);
-        assertEquals(c.invert(-3), 0);
-        assertEquals(c.invert(17), 3);
+        assertEquals(0, c.invert(3));
+        assertEquals(5, c.invert(5));
+        assertEquals(1, c.invert(2));
+        assertEquals(0, c.invert(-3));
+        assertEquals(3, c.invert(17));
 
         Permutation d = getNewPermutation("(F)", getNewAlphabet("F"));
-        assertEquals(d.invert(0), 0);
+        assertEquals(0, d.invert(0));
     }
 
     @Test
     public void testInvertChar() {
         Permutation a = getNewPermutation("", getNewAlphabet("XYZ"));
-        assertEquals(a.invert('X'), 'X');
-        assertEquals(a.invert('Z'), 'Z');
+        assertEquals('X', a.invert('X'));
+        assertEquals('Z', a.invert('Z'));
 
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
-        assertEquals(b.invert('X'), 'A');
-        assertEquals(b.invert('A'), 'W');
-        assertEquals(b.invert('B'), 'B');
+        assertEquals('A', b.invert('X'));
+        assertEquals('B', b.invert('B'));
+        assertEquals('W', b.invert('A'));
 
         Permutation c = getNewPermutation("(DEA) (BC) (F)", getNewAlphabet("ABCDEF"));
-        assertEquals(c.invert('D'), 'A');
-        assertEquals(c.invert('B'), 'C');
-        assertEquals(c.invert('F'), 'F');
-        assertEquals(c.invert('E'), 'D');
+        assertEquals('A', c.invert('D'));
+        assertEquals('C', c.invert('B'));
+        assertEquals('F', c.invert('F'));
+        assertEquals('D', c.invert('E'));
 
         Permutation d = getNewPermutation("(F)", getNewAlphabet("F"));
-        assertEquals(d.invert('F'), 'F');
+        assertEquals('F', d.invert('F'));
     }
 
     @Test
