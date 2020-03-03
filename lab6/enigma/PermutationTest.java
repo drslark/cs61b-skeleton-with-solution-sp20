@@ -105,7 +105,7 @@ public abstract class PermutationTest {
         assertEquals(0, a.permute(0));
         assertEquals(1, a.permute(1));
         assertEquals(0, a.permute(-3));
-        assertEquals(2, a.permute(12));
+        assertEquals(2, a.permute(11));
 
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
         assertEquals(23, b.permute(0));
@@ -157,7 +157,7 @@ public abstract class PermutationTest {
 
         Permutation b = getNewPermutation("(AXQW)", getNewAlphabet());
         assertEquals(0, b.invert(23));
-        assertEquals(23, b.invert(16));
+        assertEquals(22, b.invert(16));
         assertEquals(23, b.invert(-26));
         assertEquals(15, b.invert(67));
 
