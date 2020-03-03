@@ -166,7 +166,7 @@ public abstract class PermutationTest {
         assertEquals(5, c.invert(5));
         assertEquals(1, c.invert(2));
         assertEquals(0, c.invert(-3));
-        assertEquals(3, c.invert(17));
+        assertEquals(5, c.invert(17));
 
         Permutation d = getNewPermutation("(F)", getNewAlphabet("F"));
         assertEquals(0, d.invert(0));
