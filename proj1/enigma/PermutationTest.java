@@ -57,14 +57,15 @@ public class PermutationTest {
     @Test
     public void testAlphabet() {
         Alphabet a = new Alphabet("XYZ");
-        Permutation perm = new Permutation("", a);
-        assertEquals(a, perm.alphabet());
+        Permutation b = new Permutation("", a);
+        assertEquals(a, b.alphabet());
     }
 
     @Test
-    public void TestCycles() {
-        Permutation c = new Permutation("(DEA) (BC) (F)", new Alphabet("ABCDEF"));
-        HashMap<Character, Character> cycles = c.get_cycles();
+    public void testCycles() {
+        Permutation c = new Permutation("(DEA) (BC) (F)",
+                new Alphabet("ABCDEF"));
+        HashMap<Character, Character> cycles = c.cycles();
         assertEquals((Character) 'E', cycles.get('D'));
         assertEquals((Character) 'A', cycles.get('E'));
         assertEquals((Character) 'D', cycles.get('A'));
@@ -77,7 +78,8 @@ public class PermutationTest {
     public void testSize() {
         Permutation a = new Permutation("", new Alphabet("XYZ"));
         Permutation b = new Permutation("(AXQW)", new Alphabet());
-        Permutation c = new Permutation("(DEA) (BC) (F)", new Alphabet("ABCDEF"));
+        Permutation c = new Permutation("(DEA) (BC) (F)",
+                new Alphabet("ABCDEF"));
         assertEquals(3, a.size());
         assertEquals(26, b.size());
         assertEquals(6, c.size());
@@ -97,7 +99,8 @@ public class PermutationTest {
         assertEquals(22, b.permute(-10));
         assertEquals(15, b.permute(67));
 
-        Permutation c = new Permutation("(DEA) (BC) (F)", new Alphabet("ABCDEF"));
+        Permutation c = new Permutation("(DEA) (BC) (F)",
+                new Alphabet("ABCDEF"));
         assertEquals(3, c.permute(0));
         assertEquals(5, c.permute(5));
         assertEquals(1, c.permute(2));
@@ -120,7 +123,8 @@ public class PermutationTest {
         assertEquals('A', b.permute('W'));
         assertEquals('B', b.permute('B'));
 
-        Permutation c = new Permutation("(DEA) (BC) (F)", new Alphabet("ABCDEF"));
+        Permutation c = new Permutation("(DEA) (BC) (F)",
+                new Alphabet("ABCDEF"));
         assertEquals('D', c.permute('A'));
         assertEquals('C', c.permute('B'));
         assertEquals('F', c.permute('F'));
@@ -145,7 +149,8 @@ public class PermutationTest {
         assertEquals(22, b.invert(-26));
         assertEquals(15, b.invert(67));
 
-        Permutation c = new Permutation("(DEA) (BC) (F)", new Alphabet("ABCDEF"));
+        Permutation c = new Permutation("(DEA) (BC) (F)",
+                new Alphabet("ABCDEF"));
         assertEquals(0, c.invert(3));
         assertEquals(5, c.invert(5));
         assertEquals(1, c.invert(2));
@@ -167,7 +172,8 @@ public class PermutationTest {
         assertEquals('B', b.invert('B'));
         assertEquals('W', b.invert('A'));
 
-        Permutation c = new Permutation("(DEA) (BC) (F)", new Alphabet("ABCDEF"));
+        Permutation c = new Permutation("(DEA) (BC) (F)",
+                new Alphabet("ABCDEF"));
         assertEquals('A', c.invert('D'));
         assertEquals('C', c.invert('B'));
         assertEquals('F', c.invert('F'));
@@ -181,7 +187,8 @@ public class PermutationTest {
     public void testDerangement() {
         Permutation a = new Permutation("", new Alphabet("XYZ"));
         Permutation b = new Permutation("(AXQW)", new Alphabet());
-        Permutation c = new Permutation("(DEA) (BCF)", new Alphabet("ABCDEF"));
+        Permutation c = new Permutation("(DEA) (BCF)",
+                new Alphabet("ABCDEF"));
         Permutation d = new Permutation("(F)", new Alphabet("F"));
         assertFalse(a.derangement());
         assertFalse(b.derangement());

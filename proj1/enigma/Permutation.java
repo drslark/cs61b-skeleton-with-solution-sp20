@@ -53,8 +53,7 @@ class Permutation {
             } else if (_alphabet.contains(cycle.charAt(i))) {
                 throw new EnigmaException("Cycle has no "
                         + "left closing");
-            }
-            else {
+            } else {
                 i += 1;
             }
         }
@@ -81,10 +80,10 @@ class Permutation {
     /** Return the result of applying this permutation to P modulo the
      *  alphabet size. */
     int permute(int p) {
-         p = wrap(p);
-         char ch = _alphabet.toChar(p);
-         ch = permute(ch);
-         return _alphabet.toInt(ch);
+        p = wrap(p);
+        char ch = _alphabet.toChar(p);
+        ch = permute(ch);
+        return _alphabet.toInt(ch);
     }
 
     /** Return the result of applying the inverse of this permutation
@@ -128,9 +127,9 @@ class Permutation {
     }
 
     /** Return the cycles used to initialize this Permutation. */
-     HashMap<Character, Character> getCycles() {
-     return _cycles;
-     }
+    HashMap<Character, Character> cycles() {
+        return _cycles;
+    }
 
     /** Return true iff this permutation is a derangement (i.e., a
      *  permutation for which no value maps to itself). */

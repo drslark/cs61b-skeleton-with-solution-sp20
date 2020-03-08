@@ -38,7 +38,7 @@ class Alphabet {
      *  the alphabet. This is the inverse of toChar(). */
     int toInt(char ch) {
         String str = "" + ch;
-        return _chars.indexOf(str) ;
+        return _chars.indexOf(str);
     }
 
     /** Characters in the alphabet. */
