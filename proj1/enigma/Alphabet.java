@@ -24,19 +24,21 @@ class Alphabet {
 
     /** Returns true if CH is in this alphabet. */
     boolean contains(char ch) {
-        return 'A' <= ch && ch <= 'Z'; // FIXME
+        String str = "" + ch;
+        return _chars.contains(str);
     }
 
     /** Returns character number INDEX in the alphabet, where
      *  0 <= INDEX < size(). */
     char toChar(int index) {
-        return (char) ('A' + index); // FIXME
+        return _chars.charAt(index);
     }
 
     /** Returns the index of character CH which must be in
      *  the alphabet. This is the inverse of toChar(). */
     int toInt(char ch) {
-        return ch - 'A'; // FIXME
+        String str = "" + ch;
+        return _chars.indexOf(str) ;
     }
 
     /** Characters in the alphabet. */
