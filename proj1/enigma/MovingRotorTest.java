@@ -9,8 +9,8 @@ import java.util.HashMap;
 
 import static enigma.TestUtils.*;
 
-/** The suite of all JUnit tests for the Permutation class.
- *  @author
+/** The suite of all JUnit tests for the MovingRotor class.
+ *  @author Amit Bhat
  */
 public class MovingRotorTest {
 
