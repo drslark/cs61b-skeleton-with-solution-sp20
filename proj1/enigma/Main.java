@@ -89,11 +89,14 @@ public final class Main {
 
         String msg = "";
         while (_input.hasNextLine()) {
-            if (_input.hasNext("\\*")) {
-                _input.next();
-                setUp(m, _input.nextLine());
+            String nxt = _input.nextLine();
+            if (nxt.equals("")) {
+                _output.println();
+            } else if (nxt.contains("*")) {
+                nxt = nxt.substring(1);
+                setUp(m, nxt);
             } else {
-                msg = m.convert(_input.nextLine());
+                msg = m.convert(nxt);
                 printMessageLine(msg);
             }
         }
@@ -125,7 +128,8 @@ public final class Main {
             String name = _config.next();
             String posAndNotch = _config.next();
             String cycle = _config.nextLine();
-            while (_config.hasNext("\\([A-Z]+\\)")) {
+            while (_config.hasNext("\\(([A-Z]||[a-z]||\\_||\\.)+"
+                    + "\\)")) {
                 cycle = cycle + _config.nextLine();
             }
             String notches = "";
@@ -183,20 +187,24 @@ public final class Main {
     /** Print MSG in groups of five (except that the last group may
      *  have fewer letters). */
     private void printMessageLine(String msg) {
-        int total = 0;
-        for (int i = 0; i < msg.length() / 5; i += 1) {
-            String out = "";
-            for (int j = 0; j < 5; j += 1, total += 1) {
-                out = out + msg.charAt(total);
+        if (msg.equals("")) {
+            _output.println("\n");
+        } else {
+            int total = 0;
+            for (int i = 0; i < msg.length() / 5; i += 1) {
+                String out = "";
+                for (int j = 0; j < 5; j += 1, total += 1) {
+                    out = out + msg.charAt(total);
+                }
+                _output.print(out + " ");
             }
-            _output.print(out + " ");
-        }
 
-        String last = "";
-        for (; total < msg.length(); total += 1) {
-            last = last + msg.charAt(total);
+            String last = "";
+            for (; total < msg.length(); total += 1) {
+                last = last + msg.charAt(total);
+            }
+            _output.println(last);
         }
-        _output.println(last);
     }
 
     /** Alphabet used in this machine. */
