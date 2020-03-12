@@ -22,8 +22,14 @@ public class MachineTest {
         allRotors = new ArrayList<>();
 
         for (String x : rotors.keySet()) {
-            Rotor r = new MovingRotor(x,
-                    new Permutation(rotors.get(x), UPPER), "");
+            Rotor r;
+            if (x.equals("B") || x.equals("C")) {
+                r = new Reflector(x,
+                        new Permutation(rotors.get(x), UPPER));
+            } else {
+                r = new MovingRotor(x,
+                        new Permutation(rotors.get(x), UPPER), "");
+            }
             allRotors.add(r);
         }
     }
@@ -88,7 +94,7 @@ public class MachineTest {
         m1.insertRotors(slots1);
         m1.setRotors(settings1);
         m1.setPlugboard(new Permutation("(AQ) (EP)", UPPER));
-        assertEquals("IHBDQ", m1.convert("HELLO"));
+        assertEquals("IHBDQQMTQZ", m1.convert("HELLOWORLD"));
 
         Machine m2 = new Machine(UPPER, 5, 3, allRotors);
         String[] slots2 = {"B", "Beta", "I", "II", "III"};
@@ -96,15 +102,7 @@ public class MachineTest {
         m2.insertRotors(slots2);
         m2.setRotors(settings2);
         m2.setPlugboard(new Permutation("(AQ) (EP)", UPPER));
-        assertEquals("IHBDQ QMTQZ", m2.convert("HELLO WORLD"));
-
-        Machine m3 = new Machine(UPPER, 5, 3, allRotors);
-        String[] slots3 = {"B", "Beta", "I", "II", "III"};
-        String settings3 = "AAAA";
-        m3.insertRotors(slots3);
-        m3.setRotors(settings3);
-        m3.setPlugboard(new Permutation("(AQ) (EP)", UPPER));
-        assertEquals("HELLO WORLD", m3.convert("IHBDQ QMTQZ"));
+        assertEquals("HELLOWORLD", m2.convert("IHBDQQMTQZ"));
     }
 
 }

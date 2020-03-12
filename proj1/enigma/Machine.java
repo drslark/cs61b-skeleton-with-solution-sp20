@@ -60,6 +60,11 @@ class Machine {
             _slotRotors[i] = _allRotors.get(rotors[i]);
             _slotRotors[i].set(0);
         }
+
+        if (!_slotRotors[0].reflecting()) {
+            throw new EnigmaException("first rotor "
+                    + "doesn't reflect");
+        }
     }
 
     /** Set my rotors according to SETTING, which must be a string of
@@ -87,9 +92,9 @@ class Machine {
         for (int i = 1; i < _slotRotors.length; i += 1) {
             if (i + 1 == _slotRotors.length) {
                 _slotRotors[i].advance();
-            } else if ((_slotRotors[i + 1].atNotch()
-                    && _slotRotors[i].rotates())
-                    || lastMoved) {
+            } else if (_slotRotors[i].rotates()
+                    && (_slotRotors[i + 1].atNotch()
+                    || lastMoved)) {
                 _slotRotors[i].advance();
                 lastMoved = true;
             } else {
@@ -119,12 +124,14 @@ class Machine {
         for (int i = 0; i < msg.length(); i += 1) {
             char currentChar = msg.charAt(i);
             char newChar; int newInt;
-            if (_alphabet.contains(currentChar)) {
-                newInt = convert(_alphabet.toInt(currentChar));
-                newChar = _alphabet.toChar(newInt);
-            } else {
-                newChar = currentChar;
+            if (currentChar == ' ') {
+                continue;
+            } else if (!_alphabet.contains(currentChar)) {
+                throw new EnigmaException("Letters not"
+                        + "in alphabet");
             }
+            newInt = convert(_alphabet.toInt(currentChar));
+            newChar = _alphabet.toChar(newInt);
             converted = converted + newChar;
         }
         return converted;
