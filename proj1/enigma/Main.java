@@ -113,7 +113,7 @@ public final class Main {
             int numRotors = _config.nextInt();
             int numPawls = _config.nextInt();
             _config.nextLine();
-            while (_config.hasNextLine()) {
+            while (_config.hasNext()) {
                 allRotors.add(readRotor());
             }
             return new Machine(_alphabet, numRotors, numPawls, allRotors);
@@ -128,7 +128,7 @@ public final class Main {
             String name = _config.next();
             String posAndNotch = _config.next();
             String cycle = _config.nextLine();
-            while (_config.hasNext("\\(([A-Z]||[a-z]||\\_||\\.)+"
+            while (_config.hasNext("\\(([A-Z]||[a-z]||_||\\.)+"
                     + "\\)")) {
                 cycle = cycle + _config.nextLine();
             }
@@ -171,12 +171,22 @@ public final class Main {
             }
 
             String positions = set.next();
+            String ringSetting = "";
+            if (set.hasNext("([A-Z]||[a-z]||_||\\.)+")) {
+                ringSetting = set.next();
+            } else {
+                for (int i = 1; i < M.numRotors(); i += 1) {
+                    ringSetting = ringSetting + _alphabet.toChar(0);
+                }
+            }
+
             String plug = "";
             if (set.hasNext()) {
                 plug = set.nextLine();
             }
             M.insertRotors(slots);
             M.setRotors(positions);
+            M.setRings(ringSetting);
             M.setPlugboard(new Permutation(plug, _alphabet));
         } catch (NoSuchElementException excp) {
             throw error("bad setting description");

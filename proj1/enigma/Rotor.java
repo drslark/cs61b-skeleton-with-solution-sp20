@@ -12,6 +12,7 @@ class Rotor {
         _name = name;
         _permutation = perm;
         _setting = 0;
+        _ringSetting = 0;
     }
 
     /** Return my name. */
@@ -59,21 +60,36 @@ class Rotor {
         _setting = alphabet().toInt(cposn);
     }
 
+    /** Return my current setting. */
+    int ringSetting() {
+        return _ringSetting;
+    }
+
+    /** Set setting() to POSN.  */
+    void setRing(int posn) {
+        _ringSetting = permutation().wrap(posn);
+    }
+
+    /** Set setting() to character CPOSN. */
+    void setRing(char cposn) {
+        _ringSetting = alphabet().toInt(cposn);
+    }
+
     /** Return the conversion of P (an integer in the range 0..size()-1)
      *  according to my permutation. */
     int convertForward(int p) {
-        int newChar = permutation().wrap(p + setting());
+        int newChar = permutation().wrap(p + setting() - ringSetting());
         newChar = permutation().permute(newChar);
-        newChar = permutation().wrap(newChar - setting());
+        newChar = permutation().wrap(newChar - setting() + ringSetting());
         return newChar;
     }
 
     /** Return the conversion of E (an integer in the range 0..size()-1)
      *  according to the inverse of my permutation. */
     int convertBackward(int e) {
-        int newChar = permutation().wrap(e + setting());
+        int newChar = permutation().wrap(e + setting() - ringSetting());
         newChar = permutation().invert(newChar);
-        newChar = permutation().wrap(newChar - setting());
+        newChar = permutation().wrap(newChar - setting() + ringSetting());
         return newChar;
     }
 
@@ -100,6 +116,9 @@ class Rotor {
 
     /** The position that this rotor is currently in. */
     private int _setting;
+
+    /** The ring setting that this rotor is currently in. */
+    private int _ringSetting;
 
 
 }

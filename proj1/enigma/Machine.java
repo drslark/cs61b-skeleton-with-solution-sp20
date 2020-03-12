@@ -84,6 +84,19 @@ class Machine {
         _plugBoard = new FixedRotor("Plugboard", plugboard);
     }
 
+
+    /** Set my rotors according to SETTING, which must be a string of
+     *  numRotors()-1 characters in my alphabet. The first letter refers
+     *  to the leftmost rotor setting (not counting the reflector).  */
+    void setRings(String setting) {
+        if (setting.length() != numRotors() - 1) {
+            throw new EnigmaException("incorrect number of rings");
+        }
+        for (int i = 0; i < setting.length(); i += 1) {
+            _slotRotors[i + 1].setRing(setting.charAt(i));
+        }
+    }
+
     /** Returns the result of converting the input character C (as an
      *  index in the range 0..alphabet size - 1), after first advancing
      *  the machine. */
