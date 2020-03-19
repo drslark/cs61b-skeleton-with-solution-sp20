@@ -20,9 +20,7 @@ public class BitExercise {
     */
     public static boolean powerOfTwo(int x) {
         int y = x & (x - 1);
-        int z = ~x & (~x + 1);
-
-        return (y == 0 || z == 0 || x == 0);
+        return (y == 0 && x != 0);
     }
     
     /** Fill in the function below so that it returns 
