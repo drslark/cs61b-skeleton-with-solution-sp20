@@ -11,7 +11,7 @@ public class BitExercise {
     * should return 4, which in binary is 0b100.
     */
     public static int lastBit(int x) {
-        return x & -x ;
+        return x & -x;
     }
 
     /** Fill in the function below so that it returns 
@@ -30,8 +30,6 @@ public class BitExercise {
     * absolute(-1) should return 1.
     */
     public static int absolute(int x) {
-        x = x << 1;
-        x = x >>> 1;
-        return x;
+        return 0;
     } 
 }
