@@ -1,17 +1,17 @@
 Q: Is one GrowList implementation always better than the others?
-A:
+A: Not necessarily, as in multiple runs of AmortizationTiming, JavaGrowList and GeomGrowList seem to do relatively the same in terms of runtime.
 
 Q: Why is the runtime for N insertions into a geometrically resizing list a Theta(N) operation?
-A:
+A: The runtime for N insertions into a geometric resizing list is a Theta(N) operation because after every n operations, it doesn't have to increase the array for another n elements due to the doubling resizing nature of the list.
 
 Q: Why is the runtime for N insertions into a arithmetically resizing list a Theta(N^2) operation?
-A:
+A: he runtime for N insertions into a arithmetic resizing list is a Theta(N^2) operation because after every n operations, the array size only increases by 1, and thus after every successive N + k operations, the array increases to a size of n + k.
 
 Q: How does the runtime per operation for the ArithGrowList compare to that of GeomGrowList and JavaGrowList? Specifically look at the non-accumulated plots and desribe the trends for how long each operation takes as a function of how many elements have already been inserted in the list.
-A:
+A: In general, with nonaccumulating plots, the ArithGrowList takes significantly longer compared to GeomGrowList and JavaGrowList, with ArithGrowList increasing with each element added into the list, while the other two appear to remain mostly constant in regards to time taken with increasing elements added to the list.
 
 Q: When are there spikes in the per operation runtime graphs for each of the implementations? Do these make sense to you? Hint: some of these should and others might not. Empirical runtime can be quite messy and depends on machine specifics which will be revealed in other subsequent classes like CS61C.
-A:
+A: In general, for ArithGrowList, spikes appear across the plot, but mostly after 350 elements in the given list. In contrast, there are not as large or frequent spikes for GeomGrowList and JavaGrowList.
 
 Q: Optional: Try changing the code for GeomGrowList to resize by a different factor. How does this effect the theoretical asymptotic runtime? How does this effect the plotted runtime?
 A:
