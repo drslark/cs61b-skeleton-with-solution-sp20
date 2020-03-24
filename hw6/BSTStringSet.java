@@ -37,12 +37,14 @@ public class BSTStringSet implements SortedStringSet, Iterable<String> {
     }
 
     private static boolean containsHelper(Node node, String s) {
-        if (node != null && node.s.equals(s)) {
-            return true;
-        } else if (node.left != null && s.compareTo(node.s) < 0) {
-            return containsHelper(node.left, s);
-        } else if (node.right != null && s.compareTo(node.s) > 0) {
-            return containsHelper(node.right, s);
+        if (node != null) {
+            if (node.s.equals(s)) {
+                return true;
+            } else if (s.compareTo(node.s) < 0) {
+                return containsHelper(node.left, s);
+            } else if (s.compareTo(node.s) > 0) {
+                return containsHelper(node.right, s);
+            }
         }
         return false;
     }
