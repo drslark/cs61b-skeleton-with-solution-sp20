@@ -130,8 +130,7 @@ public class BSTStringSet implements SortedStringSet, Iterable<String> {
         return new BSTIterator(_root);
     }
 
-    // FIXME: UNCOMMENT THE NEXT LINE FOR PART B
-    // @Override
+    @Override
     public Iterator<String> iterator(String low, String high) {
         return new BSTRangeIterator(_root, low, high);
     }
