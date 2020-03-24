@@ -6,9 +6,9 @@ import java.util.Stack;
 
 /**
  * Implementation of a BST based String Set.
- * @author
+ * @author Amit Bhat
  */
-public class BSTStringSet implements StringSet, Iterable<String> {
+public class BSTStringSet implements SortedStringSet, Iterable<String> {
     /** Creates a new empty set. */
     public BSTStringSet() {
         _root = null;
@@ -16,17 +16,50 @@ public class BSTStringSet implements StringSet, Iterable<String> {
 
     @Override
     public void put(String s) {
-        // FIXME: PART A
+        _root = putHelper(_root, s);
+
+    }
+
+    private Node putHelper(Node node, String s) {
+        if (node == null) {
+            node = new Node(s);
+        } else if (s.compareTo(node.s) < 0) {
+            node.left = putHelper(node.left, s);
+        } else if (s.compareTo(node.s) > 0) {
+            node.right = putHelper(node.right, s);
+        }
+        return node;
     }
 
     @Override
     public boolean contains(String s) {
-        return false; // FIXME: PART A
+        return containsHelper(_root, s);
+    }
+
+    private static boolean containsHelper(Node node, String s) {
+        if (node.s.equals(s)) {
+            return true;
+        } else if (node.left != null && s.compareTo(node.s) < 0) {
+            return containsHelper(node.left, s);
+        } else if (node.right != null && s.compareTo(node.s) > 0) {
+            return containsHelper(node.right, s);
+        }
+        return false;
     }
 
     @Override
     public List<String> asList() {
-        return null; // FIXME: PART A
+        ArrayList<String> items = new ArrayList<String>();
+        asListHelper(items, _root);
+        return items;
+    }
+
+    public void asListHelper(List<String> items, Node node) {
+        if (node != null) {
+            asListHelper(items, node.left);
+            items.add(node.s);
+            asListHelper(items, node.right);
+        }
     }
 
 
@@ -98,9 +131,51 @@ public class BSTStringSet implements StringSet, Iterable<String> {
     // FIXME: UNCOMMENT THE NEXT LINE FOR PART B
     // @Override
     public Iterator<String> iterator(String low, String high) {
-        return null;  // FIXME: PART B
+        return new BSTRangeIterator(_root, low, high);
     }
 
+    private static class BSTRangeIterator implements Iterator<String> {
+        private Stack<Node> _toDo = new Stack<>();
+        private String _low;
+        private String _high;
+
+        /** A new iterator over the labels in NODE. */
+        BSTRangeIterator(Node node, String low, String high) {
+            _low = low;
+            _high = high;
+            addTree(node);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !_toDo.empty();
+        }
+
+        @Override
+        public String next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            Node node = _toDo.pop();
+            return node.s;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        private void addTree(Node node) {
+            while (node != null) {
+                if (_low.compareTo(node.s) <= 0 && _high.compareTo(node.s) >= 0) {
+                    _toDo.push(node);
+                }
+                addTree(node.right);
+                node = node.left;
+            }
+        }
+    }
 
     /** Root node of the tree. */
     private Node _root;
