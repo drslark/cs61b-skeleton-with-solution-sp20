@@ -13,6 +13,9 @@ class ECHashStringSet implements StringSet {
 
     ECHashStringSet() {
         bins = new StringList[4];
+        for (int i = 0; i < bins.length; i += 1) {
+            bins[i] = new StringList();
+        }
         binCount = 4;
         numItems = 0;
     }
@@ -34,18 +37,16 @@ class ECHashStringSet implements StringSet {
     }
 
     private void resize() {
-        int newBinCount = binCount * 2;
+        int newBinCount = binCount * 5;
         StringList[] newBins = new StringList[newBinCount];
+        for (int i = 0; i < newBins.length; i += 1) {
+            newBins[i] = new StringList();
+        }
 
         for (StringList x : bins) {
-            if (!(x == null)) {
-                for (String s : x) {
-                    int binIndex = (s.hashCode() & 0x7fffffff) % binCount;
-                    if (newBins[binIndex] == null) {
-                        newBins[binIndex] = new StringList();
-                    }
-                    newBins[binIndex].add(s);
-                }
+            for (String s : x) {
+                int binIndex = (s.hashCode() & 0x7fffffff) % binCount;
+                newBins[binIndex].add(s);
             }
         }
         binCount = newBinCount;
@@ -57,7 +58,7 @@ class ECHashStringSet implements StringSet {
     public boolean contains(String s) {
         boolean contain = false;
         for (StringList x : bins) {
-            if (x != null && x.contains(s)) {
+            if (x.contains(s)) {
                 contain = true;
                 break;
             }
@@ -69,10 +70,7 @@ class ECHashStringSet implements StringSet {
     public List<String> asList() {
         ArrayList<String> allStrings = new ArrayList<String>();
         for (StringList x : bins) {
-            if (!(x == null)) {
-                allStrings.addAll(x);
-            }
-
+            allStrings.addAll(x);
         }
         return allStrings;
     }
