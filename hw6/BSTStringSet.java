@@ -37,7 +37,7 @@ public class BSTStringSet implements SortedStringSet, Iterable<String> {
     }
 
     private static boolean containsHelper(Node node, String s) {
-        if (node.s.equals(s)) {
+        if (node != null && node.s.equals(s)) {
             return true;
         } else if (node.left != null && s.compareTo(node.s) < 0) {
             return containsHelper(node.left, s);
@@ -168,10 +168,10 @@ public class BSTStringSet implements SortedStringSet, Iterable<String> {
 
         private void addTree(Node node) {
             while (node != null) {
+                addTree(node.right);
                 if (_low.compareTo(node.s) <= 0 && _high.compareTo(node.s) >= 0) {
                     _toDo.push(node);
                 }
-                addTree(node.right);
                 node = node.left;
             }
         }
