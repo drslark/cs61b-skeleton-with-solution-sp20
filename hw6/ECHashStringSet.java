@@ -38,12 +38,14 @@ class ECHashStringSet implements StringSet {
         StringList[] newBins = new StringList[newBinCount];
 
         for (StringList x : bins) {
-            for (String s : x) {
-                int binIndex = (s.hashCode() & 0x7fffffff) % binCount;
-                if (newBins[binIndex] == null) {
-                    newBins[binIndex] = new StringList();
+            if (!(x == null)) {
+                for (String s : x) {
+                    int binIndex = (s.hashCode() & 0x7fffffff) % binCount;
+                    if (newBins[binIndex] == null) {
+                        newBins[binIndex] = new StringList();
+                    }
+                    newBins[binIndex].add(s);
                 }
-                newBins[binIndex].add(s);
             }
         }
         binCount = newBinCount;
