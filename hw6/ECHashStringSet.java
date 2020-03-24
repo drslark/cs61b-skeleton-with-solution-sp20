@@ -39,7 +39,7 @@ class ECHashStringSet implements StringSet {
 
         for (StringList x : bins) {
             for (String s : x) {
-                int binIndex = s.hashCode() % newBinCount;
+                int binIndex = (s.hashCode() & 0x7fffffff) % binCount;
                 if (newBins[binIndex] == null) {
                     newBins[binIndex] = new StringList();
                 }
@@ -67,7 +67,10 @@ class ECHashStringSet implements StringSet {
     public List<String> asList() {
         ArrayList<String> allStrings = new ArrayList<String>();
         for (StringList x : bins) {
-            allStrings.addAll(x);
+            if (!(x == null)) {
+                allStrings.addAll(x);
+            }
+
         }
         return allStrings;
     }
