@@ -14,7 +14,7 @@ import static loa.Piece.*;
 import static loa.Square.*;
 
 /** Represents the state of a game of Lines of Action.
- *  @author
+ *  @author Amit Bhat
  */
 class Board {
 
@@ -51,7 +51,12 @@ class Board {
 
     /** Set my state to CONTENTS with SIDE to move. */
     void initialize(Piece[][] contents, Piece side) {
-        // FIXME
+        for (int r = 0; r < contents.length; r += 1) {
+            for (int c = 0; c < contents[0].length; c += 1) {
+                Square sq = sq(c,  r);
+                _board[sq.index()] = contents[r][c];
+            }
+        }
         _turn = side;
         _moveLimit = DEFAULT_MOVE_LIMIT;
     }
@@ -66,7 +71,8 @@ class Board {
         if (board == this) {
             return;
         }
-        // FIXME
+        System.arraycopy(board._board, 0, _board, 0, board._board.length);
+        _turn = board._turn;
     }
 
     /** Return the contents of the square at SQ. */
@@ -77,7 +83,10 @@ class Board {
     /** Set the square at SQ to V and set the side that is to move next
      *  to NEXT, if NEXT is not null. */
     void set(Square sq, Piece v, Piece next) {
-        // FIXME
+        _board[sq.index()] = v;
+        if (next != null) {
+            _turn = next;
+        }
     }
 
     /** Set the square at SQ to V, without modifying the side that
@@ -117,6 +126,7 @@ class Board {
     /** Return true iff FROM - TO is a legal move for the player currently on
      *  move. */
     boolean isLegal(Square from, Square to) {
+
         return true;   // FIXME
     }
 

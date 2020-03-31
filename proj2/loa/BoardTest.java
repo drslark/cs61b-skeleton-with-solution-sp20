@@ -10,7 +10,7 @@ import static loa.Square.sq;
 import static loa.Move.mv;
 
 /** Tests of the Board class API.
- *  @author
+ *  @author Amit Bhat
  */
 public class BoardTest {
 
@@ -68,6 +68,18 @@ public class BoardTest {
     @Test
     public void toStringTest() {
         assertEquals(BOARD1_STRING, new Board(BOARD1, BP).toString());
+    }
+
+
+    /** Test copy constructor */
+    @Test
+    public void copyConstructorTest() {
+        Board b1 = new Board(BOARD1, BP);
+        Board b2 = new Board(b1);
+
+        assertEquals(BOARD1_STRING, b2.toString());
+        assertEquals(b1, b2);
+        assertNotSame(b1, b2);
     }
 
     /** Test legal moves. */
