@@ -137,4 +137,8 @@ public class ArrayHeapTest {
                     hp.removeMin());
         }
     }
+
+    public static void main(String[] args) {
+        System.exit(ucb.junit.textui.runClasses(ArrayHeapTest.class));
+    }
 }
