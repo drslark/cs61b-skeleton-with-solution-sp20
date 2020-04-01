@@ -108,14 +108,25 @@ class Board {
      *  is false. */
     void makeMove(Move move) {
         assert isLegal(move);
-        // FIXME
+        if (_board[move.getTo().index()] == _turn.opposite()) {
+            move = move.captureMove();
+        }
+        set(move.getTo(), _turn, _turn.opposite());
+        set(move.getFrom(), Piece.EMP);
+        _moves.add(move);
     }
 
     /** Retract (unmake) one move, returning to the state immediately before
      *  that move.  Requires that movesMade () > 0. */
     void retract() {
         assert movesMade() > 0;
-        // FIXME
+        Move retracted = _moves.remove(_moves.size() - 1);
+        if (retracted.isCapture()) {
+            set(retracted.getTo(), _turn);
+        } else {
+            set(retracted.getTo(), Piece.EMP);
+        }
+        set(retracted.getFrom(), _turn.opposite(), _turn.opposite());
     }
 
     /** Return the Piece representing who is next to move. */
@@ -126,9 +137,61 @@ class Board {
     /** Return true iff FROM - TO is a legal move for the player currently on
      *  move. */
     boolean isLegal(Square from, Square to) {
-
-        return true;   // FIXME
+        return from.distance(to) == numPiecesInLine(from, to)
+                && !(blocked(from, to));
     }
+
+
+    /** Return the total number of pieces in the line containing
+     *  FROM and TO. */
+    private int numPiecesInLine(Square from, Square to) {
+        int forwardDir = from.direction(to);
+        int backwardsDir = to.direction(from);
+        int steps = 1; int numPieces = 1;
+        Square sq = from.moveDest(forwardDir, steps);
+        while (sq != null) {
+            if (_board[sq.index()] != Piece.EMP) {
+                numPieces += 1;
+            }
+            steps += 1;
+            sq = from.moveDest(forwardDir, steps);
+        }
+        steps = 1;
+        sq = from.moveDest(backwardsDir, steps);
+        while (sq != null) {
+            if (_board[sq.index()] != Piece.EMP) {
+                numPieces += 1;
+            }
+            steps += 1;
+            sq = from.moveDest(backwardsDir, steps);
+        }
+
+        return numPieces;
+    }
+
+    /** Return true if a move from FROM to TO is blocked by an opposing
+     *  piece or by a friendly piece on the target square. */
+    private boolean blocked(Square from, Square to) {
+        int forwardDir = from.direction(to);
+        int steps = 1;
+        int firstOppPiece = BOARD_SIZE;
+        Square sq = from.moveDest(forwardDir, steps);
+        while (sq != null) {
+            Piece curr = _board[sq.index()];
+            if (curr == _turn.opposite()
+                    && firstOppPiece == BOARD_SIZE) {
+                firstOppPiece = steps;
+            }
+            steps += 1;
+            sq = from.moveDest(forwardDir, steps);
+        }
+
+        int moveDist = from.distance(to);
+        return firstOppPiece < moveDist || _board[to.index()] == _turn;
+
+    }
+
+
 
     /** Return true iff MOVE is legal for the player currently on move.
      *  The isCapture() property is ignored. */
@@ -138,7 +201,19 @@ class Board {
 
     /** Return a sequence of all legal moves from this position. */
     List<Move> legalMoves() {
-        return null;  // FIXME
+        ArrayList<Move> legalMoves = new ArrayList<Move>();
+        for (int i = 0; i < ALL_SQUARES.length; i += 1) {
+            for (int j = 0; j < ALL_SQUARES.length; j += 1) {
+                Square from = ALL_SQUARES[i];
+                Square to = ALL_SQUARES[j];
+                if (_board[from.index()] != Piece.EMP) {
+                    if (isLegal(from, to)) {
+                        legalMoves.add(Move.mv(from, to));
+                    }
+                }
+            }
+        }
+        return legalMoves;
     }
 
     /** Return true iff the game is over (either player has all his
@@ -195,11 +270,7 @@ class Board {
         return out.toString();
     }
 
-    /** Return true if a move from FROM to TO is blocked by an opposing
-     *  piece or by a friendly piece on the target square. */
-    private boolean blocked(Square from, Square to) {
-        return false; // FIXME
-    }
+
 
     /** Return the size of the as-yet unvisited cluster of squares
      *  containing P at and adjacent to SQ.  VISITED indicates squares that

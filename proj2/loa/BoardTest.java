@@ -3,6 +3,9 @@
 package loa;
 
 import org.junit.Test;
+
+import java.util.List;
+
 import static org.junit.Assert.*;
 
 import static loa.Piece.*;
@@ -95,6 +98,24 @@ public class BoardTest {
         assertFalse("f3-e4", b.isLegal(mv("f3-e4")));
         assertFalse("c4-c7", b.isLegal(mv("c4-c7")));
         assertFalse("b1-b4", b.isLegal(mv("b1-b4")));
+    }
+
+    /** Test if legal moves are contained in list returned by
+     *  legalMoves method. */
+    @Test
+    public void testLegality2() {
+        Board b = new Board(BOARD1, BP);
+        List<Move> legalBMoves = b.legalMoves();
+
+        assertTrue("f3-d5", legalBMoves.contains(mv("f3-d5")));
+        assertTrue("f3-h5", legalBMoves.contains(mv("f3-h5")));
+        assertTrue("f3-h1", legalBMoves.contains(mv("f3-h1")));
+        assertTrue("f3-b3", legalBMoves.contains(mv("f3-b3")));
+        assertFalse("f3-d1", legalBMoves.contains(mv("f3-d1")));
+        assertFalse("f3-h3", legalBMoves.contains(mv("f3-h3")));
+        assertFalse("f3-e4", legalBMoves.contains(mv("f3-e4")));
+        assertFalse("c4-c7", legalBMoves.contains(mv("c4-c7")));
+        assertFalse("b1-b4", legalBMoves.contains(mv("b1-b4")));
     }
 
     /** Test contiguity. */
