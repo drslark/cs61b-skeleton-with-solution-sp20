@@ -107,6 +107,10 @@ class Board {
     /** Assuming isLegal(MOVE), make MOVE. Assumes MOVE.isCapture()
      *  is false. */
     void makeMove(Move move) {
+        if (_moves.size() >= DEFAULT_MOVE_LIMIT * 2) {
+            gameOver();
+        }
+
         assert isLegal(move);
         if (_board[move.getTo().index()] == _turn.opposite()) {
             move = move.captureMove();
@@ -188,7 +192,6 @@ class Board {
 
         int moveDist = from.distance(to);
         return firstOppPiece < moveDist || _board[to.index()] == _turn;
-
     }
 
 
@@ -347,7 +350,6 @@ class Board {
         }
     }
 
-    // FIXME: Other methods, variables?
 
     /** The standard initial configuration for Lines of Action (bottom row
      *  first). */
