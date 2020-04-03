@@ -107,10 +107,6 @@ class Board {
     /** Assuming isLegal(MOVE), make MOVE. Assumes MOVE.isCapture()
      *  is false. */
     void makeMove(Move move) {
-        if (_moves.size() >= DEFAULT_MOVE_LIMIT * 2) {
-            gameOver();
-        }
-
         assert isLegal(move);
         if (_board[move.getTo().index()] == _turn.opposite()) {
             move = move.captureMove();
@@ -118,6 +114,7 @@ class Board {
         set(move.getTo(), _turn, _turn.opposite());
         set(move.getFrom(), Piece.EMP);
         _moves.add(move);
+        _subsetsInitialized = false;
     }
 
     /** Retract (unmake) one move, returning to the state immediately before
@@ -244,6 +241,8 @@ class Board {
                 _winner = WP;
             } else if (piecesContiguous(BP)) {
                 _winner = BP;
+            } else if (_moves.size() > _moveLimit * 2) {
+                _winner = EMP;
             }
             _winnerKnown = true;
         }
