@@ -35,6 +35,7 @@ class Board {
      */
     Board(Piece[][] initialContents, Piece turn) {
         initialize(initialContents, turn);
+        _winnerKnown = false;
     }
 
     /** A new board in the standard initial position. */
@@ -59,6 +60,7 @@ class Board {
         }
         _turn = side;
         _moveLimit = DEFAULT_MOVE_LIMIT;
+
     }
 
     /** Set me to the initial configuration. */
@@ -244,7 +246,9 @@ class Board {
             } else if (_moves.size() > _moveLimit * 2) {
                 _winner = EMP;
             }
-            _winnerKnown = true;
+            if (_winner != null) {
+                _winnerKnown = true;
+            }
         }
         return _winner;
     }
