@@ -231,7 +231,17 @@ class Board {
      *  null.  If the game has ended in a tie, returns EMP. */
     Piece winner() {
         if (!_winnerKnown) {
-            // FIXME
+            if (!_subsetsInitialized) {
+                computeRegions();
+            }
+            if (piecesContiguous(WP)
+                    && piecesContiguous(BP)) {
+                _winner = _turn;
+            } else if (piecesContiguous(WP)) {
+                _winner = WP;
+            } else if (piecesContiguous(BP)) {
+                _winner = BP;
+            }
             _winnerKnown = true;
         }
         return _winner;
@@ -277,7 +287,21 @@ class Board {
      *  have already been processed or are in different clusters.  Update
      *  VISITED to reflect squares counted. */
     private int numContig(Square sq, boolean[][] visited, Piece p) {
-        return 0;  // FIXME
+        if (_board[sq.index()] == EMP
+                || _board[sq.index()] != p
+                || visited[sq.row()][sq.col()]) {
+            return 0;
+        } else {
+            int numSquares = 1;
+            visited[sq.row()][sq.col()] = true;
+            for (int i = 0; i < BOARD_SIZE; i += 1) {
+                Square nextSq = sq.moveDest(i, 1);
+                if (nextSq != null) {
+                    numSquares += numContig(nextSq, visited, p);
+                }
+            }
+            return numSquares;
+        }
     }
 
     /** Set the values of _whiteRegionSizes and _blackRegionSizes. */
@@ -287,7 +311,26 @@ class Board {
         }
         _whiteRegionSizes.clear();
         _blackRegionSizes.clear();
-        // FIXME
+        boolean[][] visited = new boolean[BOARD_SIZE][BOARD_SIZE];
+        for (int i = 0; i < visited.length; i += 1) {
+            System.arraycopy(INITIAL_ROW_CONTIG, 0,
+                    visited[i], 0, visited[i].length);
+        }
+
+        for (int r = 0; r < BOARD_SIZE; r += 1) {
+            for (int c = 0; c < BOARD_SIZE; c += 1) {
+                Square sq = sq(c, r);
+                int numWhite = numContig(sq, visited, WP);
+                int numBlack = numContig(sq, visited, BP);
+                if (numWhite != 0) {
+                    _whiteRegionSizes.add(numWhite);
+                }
+                if (numBlack != 0) {
+                    _blackRegionSizes.add(numWhite);
+                }
+            }
+        }
+
         Collections.sort(_whiteRegionSizes, Collections.reverseOrder());
         Collections.sort(_blackRegionSizes, Collections.reverseOrder());
         _subsetsInitialized = true;
@@ -318,6 +361,11 @@ class Board {
         { WP,  EMP, EMP, EMP, EMP, EMP, EMP, WP  },
         { EMP, BP,  BP,  BP,  BP,  BP,  BP,  EMP }
     };
+
+    /** Utility array to create the initial visited array at the beginning
+     *  of computeRegions. */
+    private static final boolean[] INITIAL_ROW_CONTIG =
+            { false, false, false, false, false, false, false, false };
 
     /** Current contents of the board.  Square S is at _board[S.index()]. */
     private final Piece[] _board = new Piece[BOARD_SIZE  * BOARD_SIZE];
