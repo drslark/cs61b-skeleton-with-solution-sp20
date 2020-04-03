@@ -21,7 +21,12 @@ class HumanPlayer extends Player {
 
     @Override
     String getMove() {
-        return getGame().readLine(true);
+        if (getGame().getBoard().gameOver()) {
+            System.out.print(getGame().getBoard().winner() + " wins.");
+        } else {
+            return getGame().readLine(true);
+        }
+
     }
 
     @Override
