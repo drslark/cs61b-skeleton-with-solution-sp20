@@ -238,12 +238,12 @@ class Board {
             }
             if (piecesContiguous(WP)
                     && piecesContiguous(BP)) {
-                _winner = _turn;
+                _winner = _turn.opposite();
             } else if (piecesContiguous(WP)) {
                 _winner = WP;
             } else if (piecesContiguous(BP)) {
                 _winner = BP;
-            } else if (_moves.size() > _moveLimit * 2) {
+            } else if (_moves.size() >= _moveLimit * 2) {
                 _winner = EMP;
             }
             if (_winner != null) {
@@ -370,7 +370,7 @@ class Board {
     /** Utility array to create the initial visited array at the beginning
      *  of computeRegions. */
     private static final boolean[] INITIAL_ROW_CONTIG =
-            { false, false, false, false, false, false, false, false };
+        { false, false, false, false, false, false, false, false };
 
     /** Current contents of the board.  Square S is at _board[S.index()]. */
     private final Piece[] _board = new Piece[BOARD_SIZE  * BOARD_SIZE];
