@@ -21,7 +21,7 @@ class HumanPlayer extends Player {
 
     @Override
     String getMove() {
-        return Move.mv(Game.readLine(true));
+        return getGame().readLine(true);
     }
 
     @Override
