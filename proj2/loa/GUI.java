@@ -19,7 +19,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import static loa.Piece.*;
 
 /** The GUI controller for a LOA board and buttons.
- *  @author
+ *  @author Amit Bhat
  */
 class GUI extends TopLevel implements View, Reporter {
 
