@@ -243,7 +243,7 @@ class Board {
                 _winner = WP;
             } else if (piecesContiguous(BP)) {
                 _winner = BP;
-            } else if (_moves.size() >= _moveLimit * 2) {
+            } else if (_moves.size() >= _moveLimit) {
                 _winner = EMP;
             }
             if (_winner != null) {
