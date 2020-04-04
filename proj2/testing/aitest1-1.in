@@ -1,0 +1,29 @@
+#*java -ea loa.Main
+# Check that the AI can win given a halfway played game.
+seed 12345
+manual black
+manual white
+d1-b3
+a3-c5
+b1-b4
+h4-e4
+c1-c4
+a4-c6
+g1-d4
+a6-d6
+d8-b6
+h5-e5
+e8-c6
+a2-c2
+f1-d3
+c2-e2
+g8-g7
+h3-f5
+e1-f2
+h2-h5
+b8-e8
+e2-g4
+dump
+auto black
+auto white
+#*move/win+
