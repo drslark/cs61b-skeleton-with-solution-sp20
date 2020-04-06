@@ -54,6 +54,7 @@ class MachinePlayer extends Player {
         Board work = new Board(getBoard());
         int value;
         assert side() == work.turn();
+        assert !work.gameOver() : "_winnerKnown error probably";
         _foundMove = null;
         if (side() == WP) {
             value = findMove(work, chooseDepth(), true, 1, -INFTY, INFTY);
@@ -86,16 +87,17 @@ class MachinePlayer extends Player {
             if (board.get(move.getFrom()) != board.turn()) {
                 continue;
             }
-            board.makeMove(move);
+            int moveValue = INFTY;
             if (board.getRegionSizes(side()).size() == 1) {
-                _foundMove = move;
-                return WINNING_VALUE;
+                moveValue = WINNING_VALUE;
             } else if (board.getRegionSizes(side().opposite()).size() == 1) {
-                return -WINNING_VALUE;
+                moveValue = -WINNING_VALUE;
+            } else {
+                board.makeMove(move);
+                moveValue =
+                        findMove(board, depth - 1, saveMove, -sense, alpha, beta);
+                board.retract();
             }
-            int moveValue =
-                    findMove(board, depth - 1, saveMove, -sense, alpha, beta);
-            board.retract();
             if (sense == 1) {
                 if (best < moveValue) {
                     best = moveValue;
@@ -113,12 +115,12 @@ class MachinePlayer extends Player {
                     }
                 }
             }
-            if (beta <= alpha || best == WINNING_VALUE) {
+            if (beta <= alpha) {
                 break;
             }
         }
 
-        if (saveMove && best != WINNING_VALUE) {
+        if (saveMove) {
             _foundMove = bestMove;
         }
 

@@ -36,6 +36,7 @@ class Board {
     Board(Piece[][] initialContents, Piece turn) {
         initialize(initialContents, turn);
         _winnerKnown = false;
+        _subsetsInitialized = false;
     }
 
     /** A new board in the standard initial position. */
@@ -60,6 +61,7 @@ class Board {
         }
         _turn = side;
         _moveLimit = DEFAULT_MOVE_LIMIT;
+
 
     }
 
@@ -109,13 +111,14 @@ class Board {
     /** Assuming isLegal(MOVE), make MOVE. Assumes MOVE.isCapture()
      *  is false. */
     void makeMove(Move move) {
-        assert isLegal(move);
+        assert isLegal(move) : "Illegal move";
         if (_board[move.getTo().index()] == _turn.opposite()) {
             move = move.captureMove();
         }
         set(move.getTo(), _turn, _turn.opposite());
         set(move.getFrom(), Piece.EMP);
         _moves.add(move);
+        _winnerKnown = false;
         _subsetsInitialized = false;
     }
 
@@ -130,6 +133,8 @@ class Board {
             set(retracted.getTo(), Piece.EMP);
         }
         set(retracted.getFrom(), _turn.opposite(), _turn.opposite());
+        _winnerKnown = false;
+        _subsetsInitialized = false;
     }
 
     /** Return the Piece representing who is next to move. */
@@ -248,9 +253,7 @@ class Board {
             } else if (_moves.size() >= _moveLimit) {
                 _winner = EMP;
             }
-            if (_winner != null) {
-                _winnerKnown = true;
-            }
+            _winnerKnown = true;
         }
         return _winner;
     }

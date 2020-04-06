@@ -93,7 +93,6 @@ class BoardWidget extends Pad {
         for (Square sq : Square.ALL_SQUARES) {
             drawPiece(g, sq);
         }
-        // More? FIXME
     }
 
     /** Draw the contents of S on G. */
@@ -121,13 +120,11 @@ class BoardWidget extends Pad {
 
     /** Handle a mouse-button push on S. */
     private void mousePressed(Square s) {
-        // FIXME
         repaint();
     }
 
     /** Handle a mouse-button release on S. */
     private void mouseReleased(Square s) {
-        // FIXME
         repaint();
     }
 
@@ -155,7 +152,6 @@ class BoardWidget extends Pad {
     /** Revise the displayed board according to BOARD. */
     synchronized void update(Board board) {
         _board.copyFrom(board);
-        // FIXME?
         repaint();
     }
 
@@ -164,7 +160,6 @@ class BoardWidget extends Pad {
      *  the board. */
     void setMoveCollection(boolean collecting) {
         _acceptingMoves = collecting;
-        // FIXME?
         repaint();
     }
 
