@@ -140,7 +140,8 @@ class Board {
     /** Return true iff FROM - TO is a legal move for the player currently on
      *  move. */
     boolean isLegal(Square from, Square to) {
-        return from.distance(to) == numPiecesInLine(from, to)
+        return from.isValidMove(to)
+                && from.distance(to) == numPiecesInLine(from, to)
                 && !(blocked(from, to));
     }
 
@@ -205,13 +206,14 @@ class Board {
     List<Move> legalMoves() {
         ArrayList<Move> legalMoves = new ArrayList<Move>();
         for (int i = 0; i < ALL_SQUARES.length; i += 1) {
+            Square from = ALL_SQUARES[i];
+            if (_board[from.index()] == Piece.EMP) {
+                continue;
+            }
             for (int j = 0; j < ALL_SQUARES.length; j += 1) {
-                Square from = ALL_SQUARES[i];
                 Square to = ALL_SQUARES[j];
-                if (_board[from.index()] != Piece.EMP) {
-                    if (isLegal(from, to)) {
-                        legalMoves.add(Move.mv(from, to));
-                    }
+                if (isLegal(from, to)) {
+                    legalMoves.add(Move.mv(from, to));
                 }
             }
         }
@@ -318,9 +320,9 @@ class Board {
         _whiteRegionSizes.clear();
         _blackRegionSizes.clear();
         boolean[][] visited = new boolean[BOARD_SIZE][BOARD_SIZE];
-        for (int i = 0; i < visited.length; i += 1) {
+        for (boolean[] row : visited) {
             System.arraycopy(INITIAL_ROW_CONTIG, 0,
-                    visited[i], 0, visited[i].length);
+                    row, 0, row.length);
         }
 
         for (int r = 0; r < BOARD_SIZE; r += 1) {

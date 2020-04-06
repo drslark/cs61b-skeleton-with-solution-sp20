@@ -2,6 +2,7 @@
  * University of California.  All rights reserved. */
 package loa;
 
+import java.util.List;
 import static loa.Piece.*;
 
 /** An automated Player.
@@ -71,19 +72,76 @@ class MachinePlayer extends Player {
      *  on BOARD, does not set _foundMove. */
     private int findMove(Board board, int depth, boolean saveMove,
                          int sense, int alpha, int beta) {
-        // FIXME
-        if (saveMove) {
-            _foundMove = null; // FIXME
+        if (depth == 0) {
+            return heuristic(board);
         }
-        return 0; // FIXME
+
+        if (depth != chooseDepth()) {
+            saveMove = false;
+        }
+
+        int best = -sense * INFTY;
+        Move bestMove = null;
+        for (Move move: board.legalMoves()) {
+            if (board.get(move.getFrom()) != board.turn()) {
+                continue;
+            }
+            board.makeMove(move);
+            if (board.getRegionSizes(side()).size() == 1) {
+                _foundMove = move;
+                return WINNING_VALUE;
+            } else if (board.getRegionSizes(side().opposite()).size() == 1) {
+                return -WINNING_VALUE;
+            }
+            int moveValue =
+                    findMove(board, depth - 1, saveMove, -sense, alpha, beta);
+            board.retract();
+            if (sense == 1) {
+                if (best < moveValue) {
+                    best = moveValue;
+                    bestMove = move;
+                    if (moveValue > alpha) {
+                        alpha = moveValue;
+                    }
+                }
+            } else {
+                if (best > moveValue) {
+                    best = moveValue;
+                    bestMove = move;
+                    if (moveValue < beta) {
+                        beta = moveValue;
+                    }
+                }
+            }
+            if (beta <= alpha || best == WINNING_VALUE) {
+                break;
+            }
+        }
+
+        if (saveMove && best != WINNING_VALUE) {
+            _foundMove = bestMove;
+        }
+
+        return best;
+    }
+
+    /** Returns the relative value of a BOARD. */
+    private int heuristic(Board board) {
+        List<Integer> ourSidePieces = board.getRegionSizes(side());
+        List<Integer> oppSidePieces = board.getRegionSizes(side().opposite());
+
+        int ourSize = ourSidePieces.size();
+        int oppSize = oppSidePieces.size();
+
+        return oppSize - ourSize + ourSidePieces.get(0) - oppSidePieces.get(0);
+
     }
 
     /** Return a search depth for the current position. */
     private int chooseDepth() {
-        return 1;  // FIXME
+        return 3;
     }
 
-    // FIXME: Other methods, variables here.
 
     /** Used to convey moves discovered by findMove. */
     private Move _foundMove;
