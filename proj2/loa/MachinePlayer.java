@@ -87,15 +87,15 @@ class MachinePlayer extends Player {
             if (board.get(move.getFrom()) != board.turn()) {
                 continue;
             }
-            int moveValue = INFTY;
+            int moveValue;
             if (board.getRegionSizes(side()).size() == 1) {
                 moveValue = WINNING_VALUE;
             } else if (board.getRegionSizes(side().opposite()).size() == 1) {
                 moveValue = -WINNING_VALUE;
             } else {
                 board.makeMove(move);
-                moveValue =
-                        findMove(board, depth - 1, saveMove, -sense, alpha, beta);
+                moveValue = findMove(board, depth - 1,
+                        saveMove, -sense, alpha, beta);
                 board.retract();
             }
             if (sense == 1) {
@@ -119,11 +119,9 @@ class MachinePlayer extends Player {
                 break;
             }
         }
-
         if (saveMove) {
             _foundMove = bestMove;
         }
-
         return best;
     }
 
@@ -143,7 +141,6 @@ class MachinePlayer extends Player {
     private int chooseDepth() {
         return 3;
     }
-
 
     /** Used to convey moves discovered by findMove. */
     private Move _foundMove;
