@@ -12,11 +12,46 @@
 </p>
 
 <h2>Rules</h2>
-
+<p>
+It is played on a checkerboard with ordinary checkers pieces. The two players take turns, each moving a piece, and possibly capturing an opposing piece. The goal of the game is to get all of one’s pieces into one group of pieces that are connected. Two pieces are connected if they are adjacent horizontally, vertically, or diagonally. Initially, the pieces are arranged as shown in Figure 1. Play alternates between Black and White, with Black moving first. Each move consists of moving a piece of your color horizontally, vertically, or diagonally onto an empty square or onto a square occupied by an opposing piece, which is then removed from the board. A piece may jump over friendly pieces (without disturbing them), but may not cross enemy pieces, except one that it captures. A piece must move a number of squares that is exactly equal to the total number of pieces (black and white) on the line along which it chooses to move (the line of action). This line contains both the squares behind and in front of the piece that moves, as well as the square the piece is on. A piece may not move off the board, onto another piece of its color, or over an opposing piece. The game ends when one side's pieces are contiguous: that is, there is a path connecting any two pieces of that side's color by a sequence of steps to adjacent squares (horizontally, vertically, or diagonally), each of which contains a piece of same color. Hence, when a side is reduced to a single piece, all of its pieces are contiguous. If a move causes both sides' pieces to be contiguous, the winner is the side that made that move. One can have infinite games, where players just repeat positions indefinitely. We will prevent this with a move-limit rule: if the current move limit is L moves (the default is 60), then after the two sides both make L moves combined, the game ends in a tie.
+</p>
 
 <h2>Controlling Play</h2>
 
-
+<p>
+Commands: Commands are whitespace-delimited.  Other trailing text on a line
+is ignored. Comment lines begin with # and are ignored.
+</p>
+<p>
+uv-xy : A move from square uv to square xy.  Here u and v are column
+designations (a-h) and v and y are row designations (1-8):
+</p>
+<p>
+new: Stop game and return to initial position.
+</p>
+<p>
+seed N: Seed the random number with integer N.
+</p>
+<p>
+auto P: P is white or black; makes P into an AI.
+</p>
+<p>
+manual P: P is white or black; takes moves for P from terminal.
+</p>
+<p>
+set cr P N : Put P ('white', 'black', or '-') into square cr, and set the
+next player to move to N ('white' or 'black').  Used to
+set up a position, not for play.
+</p>
+<p>
+dump: Display the board in standard format.
+</p>
+<p>
+quit: End program.
+</p>
+<p>
+help: This text.
+</p>
 
 </body>
 </html>

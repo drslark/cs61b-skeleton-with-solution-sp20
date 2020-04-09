@@ -26,13 +26,13 @@ class BoardWidget extends Pad {
 
     /** Colors of empty squares, pieces, boundaries, and markings. */
     static final Color
-        BLACK_COLOR = new Color(0.765f, 0.0f, 0.0117f),
-        WHITE_COLOR = Color.white,
-        DARK_SQUARE_COLOR = new Color(0.816f, 0.543f, 0.277f),
-        LIGHT_SQUARE_COLOR = new Color(1.0f, 0.805f, 0.617f),
-        BORDER_COLOR = new Color(0.408f, 0.271f, 0.138f),
-        GRID_LINE_COLOR = Color.black,
-        PIECE_BOUNDARY_COLOR = Color.black;
+            BLACK_COLOR = new Color(0.765f, 0.0f, 0.0117f),
+            WHITE_COLOR = Color.white,
+            DARK_SQUARE_COLOR = new Color(0.816f, 0.543f, 0.277f),
+            LIGHT_SQUARE_COLOR = new Color(1.0f, 0.805f, 0.617f),
+            BORDER_COLOR = new Color(0.408f, 0.271f, 0.138f),
+            GRID_LINE_COLOR = Color.black,
+            PIECE_BOUNDARY_COLOR = Color.black;
 
     /** Width of border around board (pixels). */
     static final int BORDER_WIDTH = 6;
@@ -42,18 +42,18 @@ class BoardWidget extends Pad {
     static final int SQUARE_SIDE = 30;
     /** Dimension of component containing the board and margin (pixels). */
     static final int BOARD_SIDE =
-        SQUARE_SIDE * SIZE + 2 * MARGIN + 2 * BORDER_WIDTH;
+            SQUARE_SIDE * SIZE + 2 * MARGIN + 2 * BORDER_WIDTH;
     /** Diameter of piece (pixels). */
     static final int PIECE_SIZE = (int) Math.round(0.8 * SQUARE_SIDE);
     /** Distance of edge of piece to edge of square it's on. */
     static final int PIECE_OFFSET =
-        (int) Math.round(0.5 * (SQUARE_SIDE - PIECE_SIZE));
+            (int) Math.round(0.5 * (SQUARE_SIDE - PIECE_SIZE));
 
     /** Strokes to provide boundary around board and outline of piece. */
     static final BasicStroke
-        BORDER_STROKE = new BasicStroke(BORDER_WIDTH, BasicStroke.CAP_ROUND,
-                                        BasicStroke.JOIN_ROUND),
-        PIECE_BOUNDARY_STROKE = new BasicStroke(1.0f);
+            BORDER_STROKE = new BasicStroke(BORDER_WIDTH, BasicStroke.CAP_ROUND,
+            BasicStroke.JOIN_ROUND),
+            PIECE_BOUNDARY_STROKE = new BasicStroke(1.0f);
 
     /** A graphical representation of a Loa board that sends commands
      *  derived from mouse clicks to COMMANDS.  */
@@ -74,16 +74,16 @@ class BoardWidget extends Pad {
         for (int y = 0; y < SIZE; y += 1) {
             for (int x = (y + 1) % 2; x < SIZE; x += 2) {
                 g.fillRect(x * SQUARE_SIDE + MARGIN + BORDER_WIDTH,
-                           y * SQUARE_SIDE + MARGIN + BORDER_WIDTH,
-                           SQUARE_SIDE, SQUARE_SIDE);
+                        y * SQUARE_SIDE + MARGIN + BORDER_WIDTH,
+                        SQUARE_SIDE, SQUARE_SIDE);
             }
         }
 
         g.setColor(BORDER_COLOR);
         g.setStroke(BORDER_STROKE);
         g.drawRect(MARGIN + BORDER_WIDTH / 2, MARGIN + BORDER_WIDTH / 2,
-                   BOARD_SIDE - 2 * MARGIN - BORDER_WIDTH,
-                   BOARD_SIDE - 2 * MARGIN - BORDER_WIDTH);
+                BOARD_SIDE - 2 * MARGIN - BORDER_WIDTH,
+                BOARD_SIDE - 2 * MARGIN - BORDER_WIDTH);
 
     }
 
@@ -99,32 +99,43 @@ class BoardWidget extends Pad {
     private void drawPiece(Graphics2D g, Square s) {
         Piece p = _board.get(s);
         switch (p) {
-        case EMP:
-            return;
-        case WP:
-            g.setColor(WHITE_COLOR);
-            break;
-        case BP:
-            g.setColor(BLACK_COLOR);
-            break;
-        default:
-            assert false;
+            case EMP:
+                return;
+            case WP:
+                g.setColor(WHITE_COLOR);
+                break;
+            case BP:
+                g.setColor(BLACK_COLOR);
+                break;
+            default:
+                assert false;
         }
         g.fillOval(cx(s) + PIECE_OFFSET, cy(s) + PIECE_OFFSET,
-                   PIECE_SIZE, PIECE_SIZE);
+                PIECE_SIZE, PIECE_SIZE);
         g.setColor(PIECE_BOUNDARY_COLOR);
         g.setStroke(PIECE_BOUNDARY_STROKE);
         g.drawOval(cx(s) + PIECE_OFFSET, cy(s) + PIECE_OFFSET,
-                   PIECE_SIZE, PIECE_SIZE);
+                PIECE_SIZE, PIECE_SIZE);
     }
 
     /** Handle a mouse-button push on S. */
     private void mousePressed(Square s) {
+        from = s.toString();
         repaint();
     }
 
+    private static String from;
+
     /** Handle a mouse-button release on S. */
     private void mouseReleased(Square s) {
+        String to = s.toString();
+        if (from != null && to != null) {
+            Move move = Move.mv(from + "-" + to);
+            if (move != null && _board.isLegal(move)) {
+                _commands.add(move.toString());
+                from = null;
+            }
+        }
         repaint();
     }
 
@@ -132,19 +143,19 @@ class BoardWidget extends Pad {
     private synchronized void mouseAction(String unused, MouseEvent e) {
         int xpos = e.getX(), ypos = e.getY();
         int x = (xpos - cx(0)) / SQUARE_SIDE,
-            y = (cy(SIZE - 1) - ypos) / SQUARE_SIDE + SIZE - 1;
+                y = (cy(SIZE - 1) - ypos) / SQUARE_SIDE + SIZE - 1;
         if (_acceptingMoves
-            && x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
+                && x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
             Square s = sq(x, y);
             switch (e.getID()) {
-            case MouseEvent.MOUSE_PRESSED:
-                mousePressed(s);
-                break;
-            case MouseEvent.MOUSE_RELEASED:
-                mouseReleased(s);
-                break;
-            default:
-                break;
+                case MouseEvent.MOUSE_PRESSED:
+                    mousePressed(s);
+                    break;
+                case MouseEvent.MOUSE_RELEASED:
+                    mouseReleased(s);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -152,6 +163,7 @@ class BoardWidget extends Pad {
     /** Revise the displayed board according to BOARD. */
     synchronized void update(Board board) {
         _board.copyFrom(board);
+        this.
         repaint();
     }
 
@@ -162,6 +174,8 @@ class BoardWidget extends Pad {
         _acceptingMoves = collecting;
         repaint();
     }
+
+
 
     /** Return x-pixel coordinate of the left corners of column X
      *  relative to the upper-left corner of the board. */

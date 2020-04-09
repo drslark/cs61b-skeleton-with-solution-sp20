@@ -64,14 +64,6 @@ public class Main {
                                   excp.getMessage());
                 System.exit(1);
             }
-        } else if (options.contains("--display")) {
-            try {
-                System.in.close();
-                System.err.println("Display option not implemented.");
-                System.exit(2);
-            } catch (IOException dummy) {
-                /* Ignore IOException. */
-            }
         }
 
         Game game = getGame(options);

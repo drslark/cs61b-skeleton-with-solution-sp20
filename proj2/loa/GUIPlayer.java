@@ -33,7 +33,6 @@ class GUIPlayer extends Player implements Reporter {
     String getMove() {
         while (true) {
             String command;
-            command = getGame().readLine(false);
             if (command == null) {
                 command = _gui.readCommand();
             }
