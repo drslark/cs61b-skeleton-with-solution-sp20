@@ -32,10 +32,7 @@ class GUIPlayer extends Player implements Reporter {
     @Override
     String getMove() {
         while (true) {
-            String command;
-            if (command == null) {
-                command = _gui.readCommand();
-            }
+            String command = _gui.readCommand();
             Move move = Move.mv(command);
             if (move == null || getBoard().isLegal(move)) {
                 return command;
