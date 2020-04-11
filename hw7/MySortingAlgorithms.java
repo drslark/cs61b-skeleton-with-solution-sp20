@@ -42,7 +42,21 @@ public class MySortingAlgorithms {
     public static class InsertionSort implements SortingAlgorithm {
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            for (int i = 1; i < k; i += 1) {
+                for (int j = 0; j < i; j += 1) {
+                    if (array[j] > array[i]) {
+                        int x = array[i];
+                        int y = array[j];
+                        for (int m = j; m < i; m += 1) {
+                            int z = array[m + 1];
+                            array[m + 1] = y;
+                            y = z;
+                        }
+                        array[j] = x;
+                        break;
+                    }
+                }
+            }
         }
 
         @Override
@@ -60,7 +74,15 @@ public class MySortingAlgorithms {
     public static class SelectionSort implements SortingAlgorithm {
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            for (int i = 0; i < k - 1; i += 1) {
+                int min = i;
+                for (int j = i + 1; j < k; j += 1 ) {
+                    if (array[j] < array[min]) {
+                        min = j;
+                    }
+                }
+                swap(array, i, min);
+            }
         }
 
         @Override
@@ -77,10 +99,55 @@ public class MySortingAlgorithms {
     public static class MergeSort implements SortingAlgorithm {
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            mergesort(array, 0, k-1);
         }
 
-        // may want to add additional methods
+        private void mergesort(int[] array, int start, int end) {
+            if (end - start == 0 || end - start == 1) {
+                if (end - start == 1) {
+                    if (array[start] > array[end]) {
+                        swap(array, start, end);
+                    }
+                }
+            } else {
+                int len = (end - start) / 2;
+                mergesort(array, start, start + len);
+                mergesort(array, start + len + 1, end);
+                merge(array, start, start + len, start + len + 1, end);
+            }
+
+        }
+
+        private void merge(int[] array, int start1, int end1,
+                            int start2, int end2) {
+
+            int[] array1 = new int[end1 - start1 + 1];
+            int[] array2 = new int[end2 - start2 + 1];
+            System.arraycopy(array, start1, array1, 0, end1 - start1 + 1 );
+            System.arraycopy(array, start2, array2, 0, end2 - start2 + 1 );
+            int a1 = 0;
+            int a2 = 0;
+
+            for (int i = start1; i <= end2; i += 1) {
+                if (a1 == array1.length) {
+                    array[i] = array2[a2];
+                    a2 += 1;
+                } else if (a2 == array2.length) {
+                    array[i] = array1[a1];
+                    a1 += 1;
+                } else {
+                    if (array1[a1] <= array2[a2]) {
+                        array[i] = array1[a1];
+                        a1 += 1;
+                    } else {
+                        array[i] = array2[a2];
+                        a2 += 1;
+                    }
+                }
+            }
+
+
+        }
 
         @Override
         public String toString() {
@@ -148,7 +215,33 @@ public class MySortingAlgorithms {
     public static class LSDSort implements SortingAlgorithm {
         @Override
         public void sort(int[] a, int k) {
-            // FIXME
+
+            int pow10 = 1;
+            while(true) {
+                int[] newA = new int[k];
+                System.arraycopy(a, 0, newA, 0, k);
+                int[] digits = new int[10];
+                int[] sumDig = new int[10];
+                for (int j = 0; j < k; j += 1) {
+                    int curr = (newA[j] / pow10) % 10;
+                    digits[curr] += 1;
+                    for (int m = curr + 1; m < 10; m += 1) {
+                        sumDig[m] += 1;
+                    }
+
+                }
+                if (digits[0] == k) {
+                    break;
+                }
+                for (int j = 0; j < k; j += 1) {
+                    int curr = (newA[j] / pow10) % 10;
+                    a[sumDig[curr]] = newA[j];
+                    sumDig[curr] += 1;
+                }
+                pow10 *= 10;
+
+            }
+
         }
 
         @Override
