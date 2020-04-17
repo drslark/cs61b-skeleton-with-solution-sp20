@@ -121,9 +121,9 @@ public class RedBlackTree<T extends Comparable<T>> {
         if (comp == 0) {
             return node; // do nothing.
         } else if (comp < 0) {
-            node = insert(node.left, item);
+            node.left = insert(node.left, item);
         } else {
-            node = insert(node.right, item);
+            node.right = insert(node.right, item);
         }
 
         // handle case C and "Right-leaning" situation.
