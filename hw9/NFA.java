@@ -26,7 +26,7 @@ import java.util.HashSet;
  * expression implementations, it's just something we've chosen to add. '\d' is,
  * however, standard and that should work as you've learned from lecture.
  *
- * @author
+ * @author Amit Bhat
  *
  *
  * */
@@ -69,7 +69,6 @@ public class NFA {
 
 
     /** The internal States in an NFA. */
-    // TODO: Read this inner class, then you may delete this comment
     private class State {
 
         /**
@@ -101,8 +100,20 @@ public class NFA {
          * If this State has no outgoing edges with label C, then
          * return an empty Set. */
         public Set<State> successors(char c) {
-            // TODO: Implement this method
-            return new HashSet<State>();
+            HashSet<State> states = new HashSet<State>();
+
+            if (c == EPSILON && _edges.containsKey(EPSILON)) {
+                Set<State> eps = _edges.get(c);
+                for (State s : eps) {
+                    states.add(s);
+                    states.addAll(s.successors(c));
+                }
+
+            } else if (_edges.containsKey(c)) {
+                states.addAll(_edges.get(c));
+            }
+
+            return states;
         }
 
         /**
@@ -359,8 +370,27 @@ public class NFA {
      * @param s the query String
      * @return whether or not the string S is accepted by this NFA. */
     public boolean matches(String s) {
-        // TODO: write the matching algorithm
-        return true;
+        Set<State> currentStates = new HashSet<State>();
+        currentStates.add(_startState);
+        currentStates.addAll(_startState.successors(EPSILON));
+
+        for (int i = 0; i < s.length(); i += 1) {
+            Set<State> newStates = new HashSet<State>();
+            char curr = s.charAt(i);
+            for (State x : currentStates) {
+                Set<State> currLetterStates = x.successors(curr);
+                newStates.addAll(currLetterStates);
+            }
+            currentStates = newStates;
+            newStates = new HashSet<State>();
+            for (State y : currentStates) {
+                newStates.addAll(y.successors(EPSILON));
+            }
+            currentStates.addAll(newStates);
+
+        }
+
+        return currentStates.contains(_acceptState);
     }
 
     /** Returns the pattern used to make this NFA. */
