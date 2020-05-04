@@ -2,6 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,8 +33,8 @@ public class Commit implements Serializable {
         this(message, time, firstParent, null);
     }
 
-    public Commit copy() {
-        Commit copy = new Commit(_message, commitTime, _firstParent, _secondParent);
+    public Commit copy(String message) {
+        Commit copy = new Commit(message, new Date(), _firstParent, _secondParent);
         copy._files = new HashMap<>();
         for (String s : _files.keySet()) {
             copy._files.put(s, _files.get(s));
@@ -41,10 +42,21 @@ public class Commit implements Serializable {
         return copy;
     }
 
+    public void setFirstParent(Commit commit) {
+        _firstParent = commit._firstParent;
+    }
+
     public void addStagedFiles() {
         Stage staged_additions = Stage.readFileAsStage(GitCommands.additions);
         for (String s : staged_additions.getKeys()) {
             _files.put(s, staged_additions.get(s));
+        }
+    }
+
+    public void removeStagedFiles() {
+        Stage staged_removals = Stage.readFileAsStage(GitCommands.removals);
+        for (String s : staged_removals.getKeys()) {
+            _files.remove(s);
         }
     }
 
@@ -69,6 +81,12 @@ public class Commit implements Serializable {
 
     public String getSecondParent() {
         return _secondParent;
+    }
+
+    public void makeCommitFile() throws IOException {
+        File commitFile = Utils.join(GitCommands.COMMITS, hash());
+        commitFile.createNewFile();
+        Utils.writeObject(commitFile, this);
     }
 
     public static Commit readAsCommit(File file) {

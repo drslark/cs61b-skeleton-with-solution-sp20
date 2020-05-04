@@ -44,6 +44,10 @@ public class Stage implements Serializable {
         return _files.containsValue(blob.hash());
     }
 
+    public boolean isEmpty() {
+        return _files.isEmpty();
+    }
+
     public void remove(Blob blob) {
         _files.remove(blob.getName());
     }

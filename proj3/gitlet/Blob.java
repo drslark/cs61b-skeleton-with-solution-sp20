@@ -11,7 +11,7 @@ public class Blob implements Serializable {
 
     public Blob(String fileName, File file) {
         _name = fileName;
-        _contents = Utils.serialize(file);
+        _contents = Utils.readContents(file);
     }
 
     public String getName() {

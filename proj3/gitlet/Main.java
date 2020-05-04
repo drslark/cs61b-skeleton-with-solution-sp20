@@ -20,6 +20,10 @@ public class Main {
             break;
         case "rm":
             GitCommands.rm(args[1]);
+            break;
+        case "commit":
+            GitCommands.commit(args[1]);
+            break;
         }
     }
 

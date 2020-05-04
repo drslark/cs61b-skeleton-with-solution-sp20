@@ -10,15 +10,21 @@ public class BranchPointer implements Serializable {
 
     private boolean _isCurrentBranch;
 
-    private Commit currentCommit;
+    private String currentCommit;
 
-    public BranchPointer(String name, Commit commit, boolean current) {
+    public BranchPointer(String name, String commit, boolean current) {
         this.name = name;
         currentCommit = commit;
         _isCurrentBranch = current;
     }
 
-    public void setCurrentCommit(Commit commit) {
+    public BranchPointer() {
+        name = "";
+        currentCommit = "";
+        _isCurrentBranch = false;
+    }
+
+    public void setCurrentCommit(String commit) {
         currentCommit = commit;
     }
 
@@ -30,7 +36,7 @@ public class BranchPointer implements Serializable {
         return name;
     }
 
-    public Commit getCurrentCommit() {
+    public String getCurrentCommit() {
         return currentCommit;
     }
 
@@ -41,8 +47,8 @@ public class BranchPointer implements Serializable {
         Utils.writeObject(file, this);
     }
 
-    public static Stage readFileAsBranch(File file) {
-        return Utils.readObject(file, Stage.class);
+    public static BranchPointer readFileAsBranch(File file) {
+        return Utils.readObject(file, BranchPointer.class);
     }
 
 

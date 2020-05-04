@@ -2,10 +2,7 @@ package gitlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class GitCommands {
 
@@ -19,7 +16,7 @@ public class GitCommands {
     static File removals = Utils.join(STAGING_AREA, "removals.txt");
     static File additions = Utils.join(STAGING_AREA, "additions.txt");
 
-    //static String head_branch;
+    //static String current_branch;
     static String head_commit;
 
     /** Creates a new Gitlet version-control system in the current directory,
@@ -50,7 +47,7 @@ public class GitCommands {
         initCommit.createNewFile();
         Utils.writeObject(initCommit, initialCommit);
 
-        BranchPointer master = new BranchPointer("master", initialCommit, true);
+        BranchPointer master = new BranchPointer("master", initialCommit.hash(), true);
         File masterFile = Utils.join(BRANCHES, "master");
         master.writeBranchToFile(masterFile);
 
@@ -87,17 +84,44 @@ public class GitCommands {
         removalStage.writeStageToFile(removals);
     }
 
-    /*
-    public static void commit() {
-        Commit newCommit = head.getCurrentCommit().copy();
-        newCommit.addStagedFiles();
-        head.setCurrentCommit(newCommit);
 
-        Stage staged_additions = Stage.readFileAsStage(additions);
-        staged_additions.removeAll();
-        staged_additions.writeStageToFile(additions);
+    public static void commit(String message) throws IOException {
+        Stage additionStage = Stage.readFileAsStage(additions);
+        Stage removalStage = Stage.readFileAsStage(removals);
+        if (additionStage.isEmpty() && removalStage.isEmpty()) {
+            System.out.println("No changes added to the commit.");
+            System.exit(0);
+        } else if(message.equals("")) {
+            System.out.println("Please enter a commit message.");
+            System.exit(0);
+        }
+
+        head_commit = Utils.readContentsAsString(HEAD);
+        Commit latestCommit = Commit.readAsCommit(Utils.join(COMMITS, head_commit));
+        Commit newCommit = latestCommit.copy(message);
+        newCommit.setFirstParent(latestCommit);
+        newCommit.addStagedFiles();
+        newCommit.removeStagedFiles();
+        head_commit = newCommit.hash();
+
+        BranchPointer currentBranch = new BranchPointer();
+        for (File f : Objects.requireNonNull(BRANCHES.listFiles())) {
+            currentBranch = BranchPointer.readFileAsBranch(f);
+            if (currentBranch.isCurrentBranch()) {
+                break;
+            }
+        }
+        currentBranch.setCurrentCommit(newCommit.hash());
+
+        additionStage.removeAll();
+        removalStage.removeAll();
+        additionStage.writeStageToFile(additions);
+        removalStage.writeStageToFile(removals);
+        currentBranch.writeBranchToFile(Utils.join(BRANCHES, currentBranch.getName()));
+        Utils.writeContents(HEAD, head_commit);
+        newCommit.makeCommitFile();
     }
-    */
+
 
     public static void rm(String fileName) {
         Stage additionStage = Stage.readFileAsStage(additions);
@@ -123,5 +147,6 @@ public class GitCommands {
         removalStage.writeStageToFile(removals);
 
     }
+
 
 }
