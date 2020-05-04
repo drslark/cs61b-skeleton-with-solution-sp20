@@ -28,9 +28,6 @@ public class UnitTest {
 
         assertTrue(GitCommands.STAGING_AREA.exists());
 
-        assertEquals(GitCommands.head.getCurrentCommit(),
-                GitCommands.branches.get("master").getCurrentCommit());
-
     }
 
 }

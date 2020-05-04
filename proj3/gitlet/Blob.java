@@ -1,5 +1,6 @@
 package gitlet;
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 
 public class Blob implements Serializable {
@@ -21,9 +22,14 @@ public class Blob implements Serializable {
         return _contents;
     }
 
-    public void makeBlobFile() {
+    public void makeBlobFile() throws IOException {
         File blobFile = Utils.join(GitCommands.BLOBS, hash());
+        blobFile.createNewFile();
         Utils.writeObject(blobFile, this);
+    }
+
+    public static Blob readAsBlob(File fileName) {
+        return Utils.readObject(fileName, Blob.class);
     }
 
     public String hash() {

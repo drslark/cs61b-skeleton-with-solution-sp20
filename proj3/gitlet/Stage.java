@@ -3,7 +3,10 @@ package gitlet;
 
 import java.io.File;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 public class Stage implements Serializable {
 
@@ -13,10 +16,28 @@ public class Stage implements Serializable {
 
     public Stage (String name) {
         _name = name;
+        _files = new HashMap<>();
     }
 
-    public void addBlob(Blob file) {
+
+    public void add(Blob file) {
         _files.put(file.getName(), file.hash());
+    }
+
+    public String get(String s) {
+        return _files.get(s);
+    }
+
+    public Set<String> getKeys() {
+        return _files.keySet();
+    }
+
+    public Collection<String> getValues() {
+        return _files.values();
+    }
+
+    public boolean contains(String fileName) {
+        return _files.containsKey(fileName);
     }
 
     public boolean contains(Blob blob) {
@@ -25,6 +46,10 @@ public class Stage implements Serializable {
 
     public void remove(Blob blob) {
         _files.remove(blob.getName());
+    }
+
+    public void remove(String fileName) {
+        _files.remove(fileName);
     }
 
     public void removeAll() {

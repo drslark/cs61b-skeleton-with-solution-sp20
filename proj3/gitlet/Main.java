@@ -11,11 +11,15 @@ public class Main {
     /** Usage: java gitlet.Main ARGS, where ARGS contains
      *  <COMMAND> <OPERAND> .... */
     public static void main(String... args) throws IOException {
-        if (args[0].equals("init")) {
+        switch (args[0]) {
+        case "init":
             GitCommands.init();
-        }
-        if (args[0].equals("add")) {
+            break;
+        case "add":
             GitCommands.add(args[1]);
+            break;
+        case "rm":
+            GitCommands.rm(args[1]);
         }
     }
 
