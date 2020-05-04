@@ -2,10 +2,14 @@ package gitlet;
 
 import ucb.junit.textui;
 import org.junit.Test;
+import java.io.File;
+
+import java.io.IOException;
+
 import static org.junit.Assert.*;
 
 /** The suite of all JUnit tests for the gitlet package.
- *  @author
+ *  @author Amit Bhat
  */
 public class UnitTest {
 
@@ -17,7 +21,16 @@ public class UnitTest {
 
     /** A dummy test to avoid complaint. */
     @Test
-    public void placeholderTest() {
+    public void initTest() throws IOException {
+        GitCommands.init();
+        assertTrue(GitCommands.GITLET.exists());
+        assertTrue(GitCommands.COMMITS.exists());
+
+        assertTrue(GitCommands.STAGING_AREA.exists());
+
+        assertEquals(GitCommands.head.getCurrentCommit(),
+                GitCommands.branches.get("master").getCurrentCommit());
+
     }
 
 }

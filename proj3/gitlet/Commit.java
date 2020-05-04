@@ -11,57 +11,58 @@ public class Commit implements Serializable {
 
     private Date commitTime;
 
-    private String logMessage;
+    private String _message;
 
-    private Map<String, String> files;
+    private Map<String, String> _files;
 
-    private Commit firstParent;
+    private String _firstParent;
 
-    private Commit secondParent;
+    private String _secondParent;
 
-    public Commit(String message, Date time, Commit first, Commit second)
+    public Commit(String message, Date time, String firstParent, String secondParent)
             throws FileNotFoundException {
-        logMessage = message;
+        _message = message;
         commitTime = time;
-        firstParent = first;
-        secondParent = second;
-        Scanner input = new Scanner(GitCommands.staged_files);
-        files = new HashMap<String, String>();
-        while (input.hasNext()) {
-            String fileName = input.next();
-            String reference = input.nextLine();
-            files.put(fileName, reference);
-        }
+        firstParent = firstParent;
+        secondParent = secondParent;
+        _files = new HashMap<>();
+
 
     }
 
-    public Commit(String message, Date time, Commit firstParent)
+    public Commit(String message, Date time, String firstParent)
             throws FileNotFoundException {
         this(message, time, firstParent, null);
     }
 
+    public Commit copy() throws FileNotFoundException {
+        Commit copy = new Commit(_message, commitTime, _firstParent, _secondParent);
+        copy._files = new HashMap<>();
+        for (String s : _files.keySet()) {
+            copy._files.put(s, _files.get(s));
+        }
+        return copy;
+    }
+
     public String getMessage() {
-        return logMessage;
+        return _message;
     }
 
     public Map<String, String> getFiles() {
-        return files;
+        return _files;
     }
+
 
     public String getFirstParent() {
-        return Utils.sha1(firstParent);
-    }
-
-    public Commit getFirstParentString() {
-        return firstParent;
+        return _firstParent;
     }
 
     public String getSecondParent() {
-        return Utils.sha1(secondParent);
+        return _secondParent;
     }
 
-    public Commit getSecondParentString() {
-        return secondParent;
+    public boolean contains(Blob blob) {
+        return _files.containsValue(blob.hash());
     }
 
     public String hash() {
@@ -71,10 +72,10 @@ public class Commit implements Serializable {
     @Override
     public String toString() {
         String out = hash()  + " "
-                + commitTime + " " + logMessage
-                + " " + getFirstParentString();
-        if (secondParent != null) {
-            out = out + " " + getSecondParentString();
+                + commitTime + " " + _message
+                + " " + _firstParent;
+        if (_secondParent != null) {
+            out = out + " " + _secondParent;
         }
         return out;
     }
