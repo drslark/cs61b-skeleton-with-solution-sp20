@@ -185,5 +185,37 @@ public class GitCommands {
         }
     }
 
+    public static void status() {
+        Stage additionStage = Stage.readFileAsStage(additions);
+        Stage removalStage = Stage.readFileAsStage(removals);
+
+
+        System.out.println("=== Branches ===");
+        for (File f : Objects.requireNonNull(BRANCHES.listFiles())) {
+            BranchPointer currentBranch = BranchPointer.readFileAsBranch(f);
+            String branchName = currentBranch.getName();
+            if (currentBranch.isCurrentBranch()) {
+                branchName = "*" + branchName;
+            }
+            System.out.println(branchName);
+        }
+        System.out.println();
+
+        System.out.println("=== Staged Files ===");
+        for (String s : additionStage.getKeys()) {
+            System.out.println(s);
+        }
+        System.out.println();
+
+        System.out.println("=== Removed Files ===");
+        for (String s : removalStage.getKeys()) {
+            System.out.println(s);
+        }
+        System.out.println();
+
+        System.out.println("=== Modifications Not Staged For Commit ===\n");
+        System.out.println("=== Untracked Files ===\n");
+
+    }
 
 }

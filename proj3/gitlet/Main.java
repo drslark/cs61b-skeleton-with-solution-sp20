@@ -33,6 +33,9 @@ public class Main {
         case "find":
             GitCommands.find(args[1]);
             break;
+        case "status":
+            GitCommands.status();
+            break;
         }
 
     }
