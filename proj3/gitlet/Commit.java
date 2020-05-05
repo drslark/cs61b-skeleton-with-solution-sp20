@@ -208,8 +208,8 @@ public class Commit implements Serializable {
         header = "commit " + hash();
 
         if (getSecondParent() != null) {
-            merge = getFirstParent().substring(0, 7)
-                    + getSecondParent().substring(0, 7);
+            merge = "Merge: " + getFirstParent().substring(0, 7)
+                    + " " + getSecondParent().substring(0, 7);
         }
 
         Date d = getDate();

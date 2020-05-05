@@ -519,9 +519,11 @@ public class GitCommands {
             System.out.println("Cannot merge a branch with itself.");
             System.exit(0);
         }
-        BranchPointer checkedBranch = BranchPointer.readFileAsBranch(branchFile),
-                currBranch = BranchPointer.readFileAsBranch(headPointer);
-        String splitPoint = findSplitPoint(checkedBranch.getCurrentCommit(), currBranch.getCurrentCommit());
+        BranchPointer checkedBranch = BranchPointer.
+                readFileAsBranch(branchFile);
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
+        String splitPoint = findSplitPoint(checkedBranch.getCurrentCommit(),
+                currBranch.getCurrentCommit());
         if (splitPoint.equals(headPointer)) {
             System.out.println("Given branch is an ancestor of the "
                     + "current branch.");
@@ -537,27 +539,40 @@ public class GitCommands {
                 if (checked.contains(name) && split.contains(name)) {
                     if (!(checked.getUID(name).equals(split.getUID(name)))
                         && split.getUID(name).equals(current.getUID(name))) {
-                        GitCommands.checkout2(checkedBranch.getCurrentCommit(), name);
+                        GitCommands.checkout2(
+                                checkedBranch.getCurrentCommit(), name);
                         GitCommands.add(name);
                     }
                 } else if (split.contains(name)) {
                     if (split.getUID(name).equals(current.getUID(name))) {
-                        GitCommands.rm(name); Utils.join(BLOBS, name).delete();
+                        GitCommands.rm(name);
+                        Utils.join(BLOBS, name).delete();
                     }
                 }
             }
             for (String name : checked.getNames()) {
                 if (!split.contains(name) && !current.contains(name)) {
-                    GitCommands.checkout2(checkedBranch.getCurrentCommit(), name);
+                    GitCommands.checkout2(
+                            checkedBranch.getCurrentCommit(), name);
                     GitCommands.add(name);
                 }
             }
-            GitCommands.commit("Merged " + headPointer + " into " + branchName);
-            BranchPointer curr = BranchPointer.readFileAsBranch(headPointer);
-            Commit newCommit = Commit.readAsCommit(curr.getCurrentCommit());
-            newCommit.setSecondParent(checked); newCommit.makeCommitFile();
-            curr.setCurrentCommit(newCommit.hash());
-            curr.writeBranchToFile(Utils.join(BRANCHES, headPointer));
+            mergeCommit(branchName);
         }
+    }
+
+    /** Helper method for merge; executes a merge style commit, with
+     *  the second parent being the branch BRANCHNAME. */
+    public static void mergeCommit(String branchName) throws IOException {
+        BranchPointer checkedBranch =
+                BranchPointer.readFileAsBranch(branchName);
+        Commit checked = Commit.readAsCommit(checkedBranch.getCurrentCommit());
+        GitCommands.commit("Merged " + branchName
+                + " into " + headPointer + ".");
+        BranchPointer curr = BranchPointer.readFileAsBranch(headPointer);
+        Commit newCommit = Commit.readAsCommit(curr.getCurrentCommit());
+        newCommit.setSecondParent(checked); newCommit.makeCommitFile();
+        curr.setCurrentCommit(newCommit.hash());
+        curr.writeBranchToFile(Utils.join(BRANCHES, headPointer));
     }
 }
