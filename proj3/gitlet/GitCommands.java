@@ -573,13 +573,18 @@ public class GitCommands {
      *  CHECKED, CURRENT, and SPLIT. */
     public static boolean conflictChecker(Commit checked, Commit current,
                                        Commit split, String name) {
-        boolean diffFiles = !(!checked.getUID(name).equals(split.getUID(name))
-            && !current.getUID(name).equals(split.getUID(name)));
-        boolean oneEmpty = (checked.contains(name) && !current.contains(name)
+
+        boolean diffFiles = (checked.contains(name) && current.contains(name)
+                && split.contains(name))
+                && !(!checked.getUID(name).equals(split.getUID(name))
+                && !current.getUID(name).equals(split.getUID(name)));
+        boolean oneEmpty = split.contains(name)
+                && ((checked.contains(name) && !current.contains(name)
                 && !checked.getUID(name).equals(split.getUID(name)))
                 || (!checked.contains(name) && current.contains(name)
-                && !checked.getUID(name).equals(split.getUID(name)));
+                && !current.getUID(name).equals(split.getUID(name))));
         boolean notInSplit = !split.contains(name)
+                && checked.contains(name) && current.contains(name)
                 && !current.getUID(name).equals(current.getUID(name));
 
         return diffFiles || oneEmpty || notInSplit;
