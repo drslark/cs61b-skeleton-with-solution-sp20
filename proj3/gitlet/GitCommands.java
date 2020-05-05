@@ -352,6 +352,21 @@ public class GitCommands {
         BranchPointer newBranch = new BranchPointer(branchName,
                 currBranch.getCurrentCommit(), false);
         newBranch.writeBranchToFile(file);
+    }
+
+    public static void rmBranch(String branchName) {
+
+        File branchFile = Utils.join(BRANCHES, branchName);
+        if (!branchFile.exists()) {
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        }
+        BranchPointer branch = BranchPointer.readFileAsBranch(branchFile);
+        if (branch.isCurrentBranch()) {
+            System.out.println("Cannot remove the current branch.");
+            System.exit(0);
+        }
+        branchFile.delete();
 
     }
 }
