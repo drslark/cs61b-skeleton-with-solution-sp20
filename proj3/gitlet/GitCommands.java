@@ -615,7 +615,7 @@ public class GitCommands {
                 String contentsChecked = checked.readBlobAsString(name);
                 String newContents = "<<<<<<< HEAD\n"
                         + contentsCurr + "\n=======" + contentsChecked
-                        + ">>>>>>>";
+                        + ">>>>>>>\n";
                 Utils.writeContents(Utils.join(BLOBS, current.getUID(name)),
                         newContents);
                 anyConflict = true;
