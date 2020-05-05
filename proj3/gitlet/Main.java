@@ -96,9 +96,9 @@ public class Main {
         case "checkout":
             if (args[1].equals("--") && args.length == 3) {
                 GitCommands.checkout1(args[2]);
-            } else if (args[1].matches("[a-f0-9]+")
-                    && (args[2].equals("--"))
-                    && args.length == 4) {
+            } else if (args.length == 4
+                    && args[1].matches("[a-f0-9]+")
+                    && args[2].equals("--")) {
                 GitCommands.checkout2(args[1], args[3]);
             } else if (args.length == 2) {
                 GitCommands.checkout3(args[1]);
