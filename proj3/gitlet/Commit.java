@@ -12,6 +12,10 @@ import java.util.Map;
  */
 public class Commit implements Serializable {
 
+    /** Large value to indicate that path between two commits doesn't
+     *  exist. */
+    static final int DIST_OF_BAD_PATH = Integer.MAX_VALUE - 100;
+
     /** Date of Commit. */
     private Date commitTime;
 
@@ -108,6 +112,27 @@ public class Commit implements Serializable {
     /** Returns the UID of this Commit's second parent. */
     public String getSecondParent() {
         return _secondParent;
+    }
+
+    /** Returns distance between COMMIT1 and one of its ancestors on
+     *  the same branch, COMMIT2. */
+    public static int distance(String commit1, String commit2) {
+        if (commit1 == null || commit2 == null) {
+            return DIST_OF_BAD_PATH;
+        }
+        if (commit1.equals(commit2)) {
+            return 1;
+        } else {
+            Commit currCommit = Commit.readAsCommit(Utils.join(
+                    GitCommands.COMMITS, commit1));
+            commit1 = currCommit.getFirstParent();
+            int firstParent = 1 + distance(commit1, commit2);
+            int secondParent = DIST_OF_BAD_PATH;
+            if (currCommit._secondParent != null) {
+                secondParent = 1 + distance(currCommit._secondParent, commit2);
+            }
+            return Integer.min(firstParent, secondParent);
+        }
     }
 
     /** Creates and writes this Commit to a file, with

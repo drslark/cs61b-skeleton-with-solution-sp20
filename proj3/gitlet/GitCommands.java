@@ -1,12 +1,12 @@
 package gitlet;
 
 import java.io.File;
-import java.util.Date;
-import java.util.ArrayList;
-import java.io.IOException;
 import java.util.TreeSet;
-import java.util.Set;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.Date;
 
 /** Commands for Gitlet.
  *  @author Amit Bhat
@@ -475,5 +475,66 @@ public class GitCommands {
         currBranch.writeBranchToFile(Utils.join(BRANCHES, headPointer));
     }
 
+    /** Returns the split point between the branches CURRENT and CHECKEDOUT
+     *  with minimum distance from the current branch head. */
+    public static String findSplitPoint(String current, String checkedOut) {
+        if (current == null || checkedOut == null) {
+            return null;
+        }
+        if (current.equals(checkedOut)) {
+            return current;
+        }
+        Commit currCommit = Commit.readAsCommit(Utils.join(
+                GitCommands.COMMITS, current));
+        Commit newCommit = Commit.readAsCommit(Utils.join(
+                GitCommands.COMMITS, checkedOut));
+        String firstCurrPath = findSplitPoint(
+                currCommit.getFirstParent(), checkedOut);
+        String firstCheckedPath = findSplitPoint(current,
+                newCommit.getFirstParent());
+        String secondCurrPath = findSplitPoint(
+                currCommit.getSecondParent(), checkedOut);
+        String secondCheckedPath = findSplitPoint(current,
+                newCommit.getSecondParent());
 
+        int dist1 = Commit.distance(current, firstCurrPath),
+                dist2 = Commit.distance(current, firstCheckedPath),
+                dist3 = Commit.distance(current, secondCurrPath),
+                dist4 = Commit.distance(current, secondCheckedPath);
+        int minDist = Integer.min(Integer.min(
+                Integer.min(dist1, dist2), dist3), dist4);
+
+        if (minDist == dist1) {
+            return firstCurrPath;
+        } else if (minDist == dist2) {
+            return firstCheckedPath;
+        } else if (minDist == dist3) {
+            return secondCurrPath;
+        } else {
+            return secondCheckedPath;
+        }
+    }
+
+    /** Merges files from the branch with name BRANCHNAME into the
+     *  current branch. */
+    public static void merge(String branchName) {
+        Stage additionStage = Stage.readFileAsStage(ADDITIONS);
+        Stage removalStage = Stage.readFileAsStage(REMOVALS);
+        if (!additionStage.isEmpty() || !removalStage.isEmpty()) {
+            System.out.println("You have uncommitted changes.");
+            System.exit(0);
+        }
+
+        File branchFile = Utils.join(BRANCHES, branchName);
+        if (!branchFile.exists()) {
+            System.out.println("A branch with that name does not exist.");
+            System.exit(0);
+        }
+
+        headPointer = Utils.readContentsAsString(HEAD);
+        if (headPointer.equals(branchName)) {
+            System.out.println("Cannot merge a branch with itself.");
+            System.exit(0);
+        }
+    }
 }
