@@ -361,23 +361,29 @@ public class GitCommands {
         additionStage.writeStageToFile(ADDITIONS);
         removalStage.writeStageToFile(REMOVALS);
 
-        for (String s : checkedOutCommit.getFiles().keySet()) {
-            File checkedFile = Utils.join(CWD, s);
-            if (checkedFile.exists()) {
-                Blob checkedFileAsBlob = new Blob(s, checkedFile);
-                File blobFile = Utils.join(BLOBS, checkedFileAsBlob.hash());
-                if (!blobFile.exists()) {
-                    System.out.println("There is an untracked file in the "
-                            + "way; delete it, or add and commit it first.");
-                    System.exit(0);
-                }
-            }
+        for (String s : checkedOutCommit.getNames()) {
+            unTrackedFileChecker(s);
             checkoutHelper(checkedOutCommit, s);
         }
 
         for (String s : currentCommit.getFiles().keySet()) {
             if (!checkedOutCommit.contains(s) && Utils.join(CWD, s).exists()) {
                 Utils.restrictedDelete(Utils.join(CWD, s));
+            }
+        }
+    }
+
+    /** Makes sure the file with name NAME in the
+     *  Current Working Directory is not untracked. */
+    public static void unTrackedFileChecker(String name) {
+        File checkedFile = Utils.join(CWD, name);
+        if (checkedFile.exists()) {
+            Blob checkedFileAsBlob = new Blob(name, checkedFile);
+            File blobFile = Utils.join(BLOBS, checkedFileAsBlob.hash());
+            if (!blobFile.exists()) {
+                System.out.println("There is an untracked file in the "
+                        + "way; delete it, or add and commit it first.");
+                System.exit(0);
             }
         }
     }
@@ -536,19 +542,14 @@ public class GitCommands {
             Commit current = Commit.readAsCommit(currBranch.getCurrentCommit());
             Commit split = Commit.readAsCommit(splitPoint);
 
-            for (String s : checked.getNames()) {
-                File checkedFile = Utils.join(CWD, s);
-                if (checkedFile.exists()) {
-                    Blob checkedFileAsBlob = new Blob(s, checkedFile);
-                    File blobFile = Utils.join(BLOBS, checkedFileAsBlob.hash());
-                    if (!blobFile.exists()) {
-                        System.out.println("There is an untracked file in the "
-                                + "way; delete it, or add and commit it first.");
-                        System.exit(0);
-                    }
+            for (String name : checked.getNames()) {
+                unTrackedFileChecker(name);
+                if (!split.contains(name) && !current.contains(name)) {
+                    GitCommands.checkout2(
+                            checkedBranch.getCurrentCommit(), name);
+                    GitCommands.add(name);
                 }
             }
-
             for (String name : current.getNames()) {
                 if (checked.contains(name) && split.contains(name)) {
                     if (!(checked.getUID(name).equals(split.getUID(name)))
@@ -562,13 +563,6 @@ public class GitCommands {
                         GitCommands.rm(name);
                         Utils.join(BLOBS, name).delete();
                     }
-                }
-            }
-            for (String name : checked.getNames()) {
-                if (!split.contains(name) && !current.contains(name)) {
-                    GitCommands.checkout2(
-                            checkedBranch.getCurrentCommit(), name);
-                    GitCommands.add(name);
                 }
             }
             mergeCommit(branchName);
