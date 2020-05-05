@@ -89,6 +89,13 @@ public class Main {
                 System.exit(0);
             }
             break;
+        case "branch":
+            if (args.length != 2) {
+                System.out.println("Incorrect operands.");
+                System.exit(0);
+            }
+            GitCommands.branch(args[1]);
+            break;
         default:
             System.out.println("No command with that name exists.");
             System.exit(0);

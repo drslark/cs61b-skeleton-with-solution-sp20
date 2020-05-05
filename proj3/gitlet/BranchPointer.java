@@ -32,6 +32,10 @@ public class BranchPointer implements Serializable {
         return _isCurrentBranch;
     }
 
+    public void setCurrentBranch(boolean curr) {
+        _isCurrentBranch = curr;
+    }
+
     public String getName() {
         return name;
     }

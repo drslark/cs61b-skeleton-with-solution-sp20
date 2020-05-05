@@ -17,7 +17,7 @@ public class GitCommands {
     static File additions = Utils.join(STAGING_AREA, "additions.txt");
 
     //static String current_branch;
-    static String head_commit;
+    static String head_pointer;
 
     /** Creates a new Gitlet version-control system in the current directory,
      *  with current branch master and an initial commit.
@@ -51,8 +51,8 @@ public class GitCommands {
         File masterFile = Utils.join(BRANCHES, "master");
         master.writeBranchToFile(masterFile);
 
-        head_commit = initialCommit.hash();
-        Utils.writeContents(HEAD, head_commit);
+        head_pointer = master.getName();
+        Utils.writeContents(HEAD, head_pointer);
 
     }
 
@@ -63,8 +63,11 @@ public class GitCommands {
             System.exit(0);
         }
 
-        head_commit = Utils.readContentsAsString(HEAD);
-        Commit current = Commit.readAsCommit(Utils.join(COMMITS, head_commit));
+        head_pointer = Utils.readContentsAsString(HEAD);
+        BranchPointer currBranch = BranchPointer.readFileAsBranch
+                (Utils.join(BRANCHES, head_pointer));
+        Commit current = Commit.readAsCommit(
+                Utils.join(COMMITS, currBranch.getCurrentCommit()));
         Blob fileBlob = new Blob(fileName, currFile);
         Stage additionStage = Stage.readFileAsStage(additions);
         Stage removalStage = Stage.readFileAsStage(removals);
@@ -96,13 +99,15 @@ public class GitCommands {
             System.exit(0);
         }
 
-        head_commit = Utils.readContentsAsString(HEAD);
-        Commit latestCommit = Commit.readAsCommit(Utils.join(COMMITS, head_commit));
+        head_pointer = Utils.readContentsAsString(HEAD);
+        BranchPointer currBranch = BranchPointer.readFileAsBranch
+                (Utils.join(BRANCHES, head_pointer));
+        Commit latestCommit = Commit.readAsCommit(
+                Utils.join(COMMITS, currBranch.getCurrentCommit()));
         Commit newCommit = latestCommit.copy(message);
         newCommit.setFirstParent(latestCommit);
         newCommit.addStagedFiles();
         newCommit.removeStagedFiles();
-        head_commit = newCommit.hash();
 
         BranchPointer currentBranch = new BranchPointer();
         for (File f : Objects.requireNonNull(BRANCHES.listFiles())) {
@@ -118,7 +123,6 @@ public class GitCommands {
         additionStage.writeStageToFile(additions);
         removalStage.writeStageToFile(removals);
         currentBranch.writeBranchToFile(Utils.join(BRANCHES, currentBranch.getName()));
-        Utils.writeContents(HEAD, head_commit);
         newCommit.makeCommitFile();
     }
 
@@ -127,8 +131,11 @@ public class GitCommands {
         Stage additionStage = Stage.readFileAsStage(additions);
         Stage removalStage = Stage.readFileAsStage(removals);
 
-        head_commit = Utils.readContentsAsString(HEAD);
-        Commit latestCommit = Commit.readAsCommit(Utils.join(COMMITS, head_commit));
+        head_pointer = Utils.readContentsAsString(HEAD);
+        BranchPointer currBranch = BranchPointer.readFileAsBranch
+                (Utils.join(BRANCHES, head_pointer));
+        Commit latestCommit = Commit.readAsCommit(
+                Utils.join(COMMITS, currBranch.getCurrentCommit()));
 
         if (additionStage.contains(fileName)) {
             additionStage.remove(fileName);
@@ -148,8 +155,10 @@ public class GitCommands {
     }
 
     public static void log() {
-        head_commit = Utils.readContentsAsString(HEAD);
-        String current = head_commit;
+        head_pointer = Utils.readContentsAsString(HEAD);
+        BranchPointer currBranch = BranchPointer.readFileAsBranch
+                (Utils.join(BRANCHES, head_pointer));
+        String current = currBranch.getCurrentCommit();
 
         while (current != null) {
             Commit currentCommit = Commit.readAsCommit(Utils.join(COMMITS, current));
@@ -221,9 +230,11 @@ public class GitCommands {
             throws IOException {
 
         if (commandType == 1) {
-            head_commit = Utils.readContentsAsString(HEAD);
-            Commit latestCommit =
-                    Commit.readAsCommit(Utils.join(COMMITS, head_commit));
+            head_pointer = Utils.readContentsAsString(HEAD);
+            BranchPointer currBranch = BranchPointer.readFileAsBranch
+                    (Utils.join(BRANCHES, head_pointer));
+            Commit latestCommit = Commit.readAsCommit(
+                    Utils.join(COMMITS, currBranch.getCurrentCommit()));
 
             if (!latestCommit.contains(arg1)) {
                 System.out.println("File does not exist in that commit.");
@@ -232,6 +243,15 @@ public class GitCommands {
 
             checkoutHelper(latestCommit, arg1);
         } else if (commandType == 2) {
+            if (arg1.length() < 40) {
+                for (File f : Objects.requireNonNull(COMMITS.listFiles())) {
+                    if (f.getName().substring(0, arg1.length())
+                            .equals(arg1)) {
+                        arg1 = f.getName();
+                    }
+                }
+            }
+
             File commitFile = Utils.join(COMMITS, arg1);
             if (!commitFile.exists()) {
                 System.out.println("No commit with that id exists.");
@@ -251,26 +271,56 @@ public class GitCommands {
                 System.out.println("No such branch exists.");
                 System.exit(0);
             }
-            BranchPointer branch = BranchPointer.readFileAsBranch(branchFile);
-            if (branch.isCurrentBranch()) {
+
+            head_pointer = Utils.readContentsAsString(HEAD);
+            BranchPointer newBranch = BranchPointer.readFileAsBranch(branchFile);
+            BranchPointer currBranch = BranchPointer.readFileAsBranch(
+                    Utils.join(BRANCHES, head_pointer));
+            if (newBranch.isCurrentBranch()) {
                 System.out.println("No need to checkout the current branch.");
                 System.exit(0);
             }
-            String commitHash = branch.getCurrentCommit();
-            Commit currCommit =
-                    Commit.readAsCommit(Utils.join(COMMITS, commitHash));
 
-            for (String s : currCommit.getFiles().keySet()) {
+            Stage additionStage = Stage.readFileAsStage(additions);
+            Stage removalStage = Stage.readFileAsStage(removals);
+            additionStage.removeAll();
+            removalStage.removeAll();
+            additionStage.writeStageToFile(additions);
+            removalStage.writeStageToFile(removals);
+
+            Commit checkedOutCommit =
+                    Commit.readAsCommit(Utils.join(COMMITS, newBranch.getCurrentCommit()));
+            Commit currentCommit =
+                    Commit.readAsCommit(Utils.join(COMMITS, currBranch.getCurrentCommit()));
+
+            for (String s : checkedOutCommit.getFiles().keySet()) {
                 File checkedFile = Utils.join(CWD, s);
-                Blob checkedFileAsBlob = new Blob(s, checkedFile);
-                File blobFile = Utils.join(BLOBS, checkedFileAsBlob.hash());
-                if (checkedFile.exists() && !blobFile.exists()) {
-                    System.out.println("There is an untracked file in the way; "
-                            + "delete it, or add and commit it first.");
-                    System.exit(0);
+                if (checkedFile.exists()) {
+                    Blob checkedFileAsBlob = new Blob(s, checkedFile);
+                    File blobFile = Utils.join(BLOBS, checkedFileAsBlob.hash());
+                    if (!blobFile.exists()) {
+                        System.out.println("There is an untracked file in the way; "
+                                + "delete it, or add and commit it first.");
+                        System.exit(0);
+                    }
                 }
-                checkoutHelper(currCommit, s);
+                checkoutHelper(checkedOutCommit, s);
             }
+
+            for (String s : currentCommit.getFiles().keySet() ) {
+                if (!checkedOutCommit.contains(s)
+                    && Utils.join(CWD, s).exists()) {
+                    Utils.restrictedDelete(Utils.join(CWD, s));
+                }
+            }
+
+            currBranch.setCurrentBranch(false);
+            newBranch.setCurrentBranch(true);
+            head_pointer = newBranch.getName();
+            newBranch.writeBranchToFile(Utils.join(BRANCHES, newBranch.getName()));
+            currBranch.writeBranchToFile(Utils.join(BRANCHES, currBranch.getName()));
+            Utils.writeContents(HEAD, head_pointer);
+
         }
 
     }
@@ -289,4 +339,19 @@ public class GitCommands {
 
     }
 
+    public static void branch(String branchName) throws IOException {
+        File file = Utils.join(BRANCHES, branchName);
+        if (file.exists()) {
+            System.out.println("A branch with that name already exists.");
+            System.exit(0);
+        }
+
+        head_pointer = Utils.readContentsAsString(HEAD);
+        BranchPointer currBranch = BranchPointer.readFileAsBranch
+                (Utils.join(BRANCHES, head_pointer));
+        BranchPointer newBranch = new BranchPointer(branchName,
+                currBranch.getCurrentCommit(), false);
+        newBranch.writeBranchToFile(file);
+
+    }
 }
