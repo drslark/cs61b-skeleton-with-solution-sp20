@@ -1,9 +1,11 @@
 package gitlet;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.ArrayList;
+import java.io.IOException;
+import java.util.TreeSet;
+import java.util.Set;
 import java.util.Objects;
 
 /** Commands for Gitlet.
@@ -239,31 +241,41 @@ public class GitCommands {
         Stage removalStage = Stage.readFileAsStage(REMOVALS);
 
         System.out.println("=== Branches ===");
+        Set<String> sorter = new TreeSet<String>();
+
         for (File f : Objects.requireNonNull(BRANCHES.listFiles())) {
             BranchPointer currentBranch = BranchPointer.readFileAsBranch(f);
             String branchName = currentBranch.getName();
-            if (currentBranch.isCurrentBranch()) {
-                branchName = "*" + branchName;
+            sorter.add(branchName);
+        }
+        for (String f : sorter) {
+            BranchPointer temp = BranchPointer.readFileAsBranch(
+                    Utils.join(BRANCHES, f));
+            if (temp.isCurrentBranch()) {
+                f = "*" + f;
             }
-            System.out.println(branchName);
+            System.out.println(f);
         }
         System.out.println();
+        sorter.clear();
 
+        sorter.addAll(additionStage.getKeys());
         System.out.println("=== Staged Files ===");
-        for (String s : additionStage.getKeys()) {
+        for (String s : sorter) {
             System.out.println(s);
         }
         System.out.println();
+        sorter.clear();
 
+        sorter.addAll(removalStage.getKeys());
         System.out.println("=== Removed Files ===");
-        for (String s : removalStage.getKeys()) {
+        for (String s : sorter) {
             System.out.println(s);
         }
         System.out.println();
 
         System.out.println("=== Modifications Not Staged For Commit ===\n");
         System.out.println("=== Untracked Files ===\n");
-
     }
 
     /** Takes the version of the file with name ARG1
@@ -290,14 +302,7 @@ public class GitCommands {
      *  puts it in the working directory. */
     public static void checkout2(String arg1, String arg2)
             throws IOException {
-        if (arg1.length() < Utils.UID_LENGTH) {
-            for (File f : Objects.requireNonNull(COMMITS.listFiles())) {
-                if (f.getName().substring(0, arg1.length())
-                        .equals(arg1)) {
-                    arg1 = f.getName();
-                }
-            }
-        }
+        arg1 = shortUID(arg1);
 
         File commitFile = Utils.join(COMMITS, arg1);
         if (!commitFile.exists()) {
@@ -337,17 +342,35 @@ public class GitCommands {
             System.exit(0);
         }
 
+        resetHelper(currBranch.getCurrentCommit(),
+                newBranch.getCurrentCommit());
+
+        currBranch.setCurrentBranch(false);
+        newBranch.setCurrentBranch(true);
+        headPointer = newBranch.getName();
+        newBranch.writeBranchToFile(Utils.join(BRANCHES, newBranch.getName()));
+        currBranch.writeBranchToFile(Utils.join(BRANCHES,
+                currBranch.getName()));
+        Utils.writeContents(HEAD, headPointer);
+    }
+
+    /** Helper function for reset and checkout3 that handles insertion and
+     *  deletion of files in the working directory as needed.
+     *  Takes in the current commit's UID, CURRENT, and the checked out commit's
+     *  UID, CHECKEDOUT. */
+    public static void resetHelper(String current, String checkedOut)
+            throws IOException {
+        Commit checkedOutCommit = Commit.readAsCommit(Utils.join(COMMITS,
+                checkedOut));
+        Commit currentCommit = Commit.readAsCommit(Utils.join(COMMITS,
+                current));
+
         Stage additionStage = Stage.readFileAsStage(ADDITIONS);
         Stage removalStage = Stage.readFileAsStage(REMOVALS);
         additionStage.removeAll();
         removalStage.removeAll();
         additionStage.writeStageToFile(ADDITIONS);
         removalStage.writeStageToFile(REMOVALS);
-
-        Commit checkedOutCommit = Commit.readAsCommit(Utils.join(COMMITS,
-                        newBranch.getCurrentCommit()));
-        Commit currentCommit = Commit.readAsCommit(Utils.join(COMMITS,
-                        currBranch.getCurrentCommit()));
 
         for (String s : checkedOutCommit.getFiles().keySet()) {
             File checkedFile = Utils.join(CWD, s);
@@ -368,14 +391,6 @@ public class GitCommands {
                 Utils.restrictedDelete(Utils.join(CWD, s));
             }
         }
-
-        currBranch.setCurrentBranch(false);
-        newBranch.setCurrentBranch(true);
-        headPointer = newBranch.getName();
-        newBranch.writeBranchToFile(Utils.join(BRANCHES, newBranch.getName()));
-        currBranch.writeBranchToFile(Utils.join(BRANCHES,
-                currBranch.getName()));
-        Utils.writeContents(HEAD, headPointer);
     }
 
 
@@ -392,7 +407,20 @@ public class GitCommands {
         }
 
         Utils.writeContents(file, contents);
+    }
 
+    /** Takes in a string COMMITID less than 40 characters representing a
+     *  Commit UID and returns the full UID of the Commit. */
+    public static String shortUID(String commitId) {
+        if (commitId.length() < Utils.UID_LENGTH) {
+            for (File f : Objects.requireNonNull(COMMITS.listFiles())) {
+                if (f.getName().substring(0, commitId.length())
+                        .equals(commitId)) {
+                    commitId = f.getName();
+                }
+            }
+        }
+        return commitId;
     }
 
     /** Creates a new branch with name BRANCHNAME, and points it
@@ -426,6 +454,26 @@ public class GitCommands {
             System.exit(0);
         }
         branchFile.delete();
-
     }
+
+    /** Checks out all the files tracked by the commit with
+     *  ID COMMITID. */
+    public static void reset(String commitId)
+            throws IOException {
+        commitId = shortUID(commitId);
+        File commitFile = Utils.join(COMMITS, commitId);
+        if (!commitFile.exists()) {
+            System.out.println("No commit with that id exists.");
+            System.exit(0);
+        }
+        headPointer = Utils.readContentsAsString(HEAD);
+        BranchPointer currBranch = BranchPointer.readFileAsBranch
+                (Utils.join(BRANCHES, headPointer));
+
+        resetHelper(currBranch.getCurrentCommit(), commitId);
+        currBranch.setCurrentCommit(commitId);
+        currBranch.writeBranchToFile(Utils.join(BRANCHES, headPointer));
+    }
+
+
 }
