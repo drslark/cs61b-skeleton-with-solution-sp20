@@ -24,7 +24,17 @@ public class Main {
         case "commit":
             GitCommands.commit(args[1]);
             break;
+        case "log":
+            GitCommands.log();
+            break;
+        case "global-log":
+            GitCommands.globalLog();
+            break;
+        case "find":
+            GitCommands.find(args[1]);
+            break;
         }
+
     }
 
 }

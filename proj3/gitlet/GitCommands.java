@@ -145,7 +145,44 @@ public class GitCommands {
         }
         additionStage.writeStageToFile(additions);
         removalStage.writeStageToFile(removals);
+    }
 
+    public static void log() {
+        head_commit = Utils.readContentsAsString(HEAD);
+        String current = head_commit;
+
+        while (current != null) {
+            Commit currentCommit = Commit.readAsCommit(Utils.join(COMMITS, current));
+            currentCommit.displayCommit();
+            current = currentCommit.getFirstParent();
+        }
+    }
+
+    public static void globalLog() {
+        for (File f : Objects.requireNonNull(COMMITS.listFiles())) {
+            Commit currentCommit = Commit.readAsCommit(f);
+            currentCommit.displayCommit();
+        }
+    }
+
+    public static void find(String message) {
+        ArrayList<String> ids = new ArrayList<>();
+
+        for (File f : Objects.requireNonNull(COMMITS.listFiles())) {
+            Commit currentCommit = Commit.readAsCommit(f);
+            if (currentCommit.getMessage().equals(message)) {
+                ids.add(currentCommit.hash());
+            }
+        }
+
+        if (ids.isEmpty()) {
+            System.out.println("Found no commit with that message.");
+            System.exit(0);
+        }
+
+        for (String s : ids) {
+            System.out.println(s);
+        }
     }
 
 

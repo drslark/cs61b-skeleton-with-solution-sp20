@@ -43,7 +43,7 @@ public class Commit implements Serializable {
     }
 
     public void setFirstParent(Commit commit) {
-        _firstParent = commit._firstParent;
+        _firstParent = commit.hash();
     }
 
     public void addStagedFiles() {
@@ -72,6 +72,10 @@ public class Commit implements Serializable {
 
     public Map<String, String> getFiles() {
         return _files;
+    }
+
+    public Date getDate() {
+        return commitTime;
     }
 
 
@@ -114,6 +118,31 @@ public class Commit implements Serializable {
             out = out + " " + _secondParent;
         }
         return out;
+    }
+
+    public void displayCommit() {
+        String separator = "===", merge = "";
+        String header, date, message;
+
+        header = "commit " + hash();
+
+        if (getSecondParent() != null) {
+            merge = getFirstParent().substring(0, 7)
+                    + getSecondParent().substring(0, 7);
+        }
+
+        Date d = getDate();
+        date = "Date: " + String.format("%ta %tb %td %tT %tY %tz",
+                d, d, d, d, d, d);
+        message = getMessage();
+
+        System.out.println(separator);
+        System.out.println(header);
+        if (!merge.equals("")) {
+            System.out.println(merge);
+        }
+        System.out.println(date);
+        System.out.println(message + "\n");
     }
 
 }
