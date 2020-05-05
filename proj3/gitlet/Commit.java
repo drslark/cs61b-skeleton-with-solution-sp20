@@ -6,6 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /** Represents a Commit that can be serialized.
  *  @author Amit Bhat
@@ -82,6 +83,17 @@ public class Commit implements Serializable {
         }
     }
 
+    /** Returns a set containing all the names of files in
+     *  this Commit. */
+    public Set<String> getNames() {
+        return _files.keySet();
+    }
+
+    /** Returns the UID of Blob with name NAME. */
+    public String getUID(String name) {
+        return _files.get(name);
+    }
+
     /** Returns the Blob with name FILENAME. */
     public Blob getBlob(String fileName) {
         String blobHash = _files.get(fileName);
@@ -147,6 +159,13 @@ public class Commit implements Serializable {
      *  Commit serialized into that file. */
     public static Commit readAsCommit(File file) {
         return Utils.readObject(file, Commit.class);
+    }
+
+    /** Takes in string ID and returns the
+     *  Commit with that UID. */
+    public static Commit readAsCommit(String id) {
+        return Utils.readObject(
+                Utils.join(GitCommands.COMMITS, id), Commit.class);
     }
 
     /** Returns true if this Commit contains Blob BLOB. */

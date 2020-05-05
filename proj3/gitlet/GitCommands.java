@@ -93,10 +93,8 @@ public class GitCommands {
         }
 
         headPointer = Utils.readContentsAsString(HEAD);
-        BranchPointer currBranch = BranchPointer.readFileAsBranch
-                (Utils.join(BRANCHES, headPointer));
-        Commit current = Commit.readAsCommit(
-                Utils.join(COMMITS, currBranch.getCurrentCommit()));
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
+        Commit current = Commit.readAsCommit(currBranch.getCurrentCommit());
         Blob fileBlob = new Blob(fileName, currFile);
         Stage additionStage = Stage.readFileAsStage(ADDITIONS);
         Stage removalStage = Stage.readFileAsStage(REMOVALS);
@@ -131,10 +129,9 @@ public class GitCommands {
         }
 
         headPointer = Utils.readContentsAsString(HEAD);
-        BranchPointer currBranch = BranchPointer.readFileAsBranch
-                (Utils.join(BRANCHES, headPointer));
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
         Commit latestCommit = Commit.readAsCommit(
-                Utils.join(COMMITS, currBranch.getCurrentCommit()));
+                currBranch.getCurrentCommit());
         Commit newCommit = latestCommit.copy(message);
         newCommit.setFirstParent(latestCommit);
         newCommit.addStagedFiles();
@@ -167,10 +164,9 @@ public class GitCommands {
         Stage removalStage = Stage.readFileAsStage(REMOVALS);
 
         headPointer = Utils.readContentsAsString(HEAD);
-        BranchPointer currBranch = BranchPointer.readFileAsBranch
-                (Utils.join(BRANCHES, headPointer));
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
         Commit latestCommit = Commit.readAsCommit(
-                Utils.join(COMMITS, currBranch.getCurrentCommit()));
+                currBranch.getCurrentCommit());
 
         if (additionStage.contains(fileName)) {
             additionStage.remove(fileName);
@@ -192,13 +188,11 @@ public class GitCommands {
     /** Displays information about each commit in the current branch. */
     public static void log() {
         headPointer = Utils.readContentsAsString(HEAD);
-        BranchPointer currBranch = BranchPointer.readFileAsBranch
-                (Utils.join(BRANCHES, headPointer));
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
         String current = currBranch.getCurrentCommit();
 
         while (current != null) {
-            Commit currentCommit = Commit.readAsCommit(
-                    Utils.join(COMMITS, current));
+            Commit currentCommit = Commit.readAsCommit(current);
             currentCommit.displayCommit();
             current = currentCommit.getFirstParent();
         }
@@ -249,8 +243,7 @@ public class GitCommands {
             sorter.add(branchName);
         }
         for (String f : sorter) {
-            BranchPointer temp = BranchPointer.readFileAsBranch(
-                    Utils.join(BRANCHES, f));
+            BranchPointer temp = BranchPointer.readFileAsBranch(f);
             if (temp.isCurrentBranch()) {
                 f = "*" + f;
             }
@@ -284,10 +277,9 @@ public class GitCommands {
     public static void checkout1(String arg1)
             throws IOException {
         headPointer = Utils.readContentsAsString(HEAD);
-        BranchPointer currBranch = BranchPointer.readFileAsBranch
-                (Utils.join(BRANCHES, headPointer));
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
         Commit latestCommit = Commit.readAsCommit(
-                Utils.join(COMMITS, currBranch.getCurrentCommit()));
+                currBranch.getCurrentCommit());
 
         if (!latestCommit.contains(arg1)) {
             System.out.println("File does not exist in that commit.");
@@ -335,8 +327,7 @@ public class GitCommands {
 
         headPointer = Utils.readContentsAsString(HEAD);
         BranchPointer newBranch = BranchPointer.readFileAsBranch(branchFile);
-        BranchPointer currBranch = BranchPointer.readFileAsBranch(
-                Utils.join(BRANCHES, headPointer));
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
         if (newBranch.isCurrentBranch()) {
             System.out.println("No need to checkout the current branch.");
             System.exit(0);
@@ -360,10 +351,8 @@ public class GitCommands {
      *  UID, CHECKEDOUT. */
     public static void resetHelper(String current, String checkedOut)
             throws IOException {
-        Commit checkedOutCommit = Commit.readAsCommit(Utils.join(COMMITS,
-                checkedOut));
-        Commit currentCommit = Commit.readAsCommit(Utils.join(COMMITS,
-                current));
+        Commit checkedOutCommit = Commit.readAsCommit(checkedOut);
+        Commit currentCommit = Commit.readAsCommit(current);
 
         Stage additionStage = Stage.readFileAsStage(ADDITIONS);
         Stage removalStage = Stage.readFileAsStage(REMOVALS);
@@ -433,8 +422,7 @@ public class GitCommands {
         }
 
         headPointer = Utils.readContentsAsString(HEAD);
-        BranchPointer currBranch = BranchPointer.readFileAsBranch
-                (Utils.join(BRANCHES, headPointer));
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
         BranchPointer newBranch = new BranchPointer(branchName,
                 currBranch.getCurrentCommit(), false);
         newBranch.writeBranchToFile(file);
@@ -467,8 +455,7 @@ public class GitCommands {
             System.exit(0);
         }
         headPointer = Utils.readContentsAsString(HEAD);
-        BranchPointer currBranch = BranchPointer.readFileAsBranch
-                (Utils.join(BRANCHES, headPointer));
+        BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
 
         resetHelper(currBranch.getCurrentCommit(), commitId);
         currBranch.setCurrentCommit(commitId);
@@ -484,10 +471,8 @@ public class GitCommands {
         if (current.equals(checkedOut)) {
             return current;
         }
-        Commit currCommit = Commit.readAsCommit(Utils.join(
-                GitCommands.COMMITS, current));
-        Commit newCommit = Commit.readAsCommit(Utils.join(
-                GitCommands.COMMITS, checkedOut));
+        Commit currCommit = Commit.readAsCommit(current);
+        Commit newCommit = Commit.readAsCommit(checkedOut);
         String firstCurrPath = findSplitPoint(
                 currCommit.getFirstParent(), checkedOut);
         String firstCheckedPath = findSplitPoint(current,
@@ -517,24 +502,62 @@ public class GitCommands {
 
     /** Merges files from the branch with name BRANCHNAME into the
      *  current branch. */
-    public static void merge(String branchName) {
+    public static void merge(String branchName) throws IOException {
         Stage additionStage = Stage.readFileAsStage(ADDITIONS);
         Stage removalStage = Stage.readFileAsStage(REMOVALS);
         if (!additionStage.isEmpty() || !removalStage.isEmpty()) {
             System.out.println("You have uncommitted changes.");
             System.exit(0);
         }
-
+        headPointer = Utils.readContentsAsString(HEAD);
         File branchFile = Utils.join(BRANCHES, branchName);
         if (!branchFile.exists()) {
             System.out.println("A branch with that name does not exist.");
             System.exit(0);
         }
-
-        headPointer = Utils.readContentsAsString(HEAD);
         if (headPointer.equals(branchName)) {
             System.out.println("Cannot merge a branch with itself.");
             System.exit(0);
+        }
+
+        String splitPoint = findSplitPoint(headPointer, branchName);
+        if (splitPoint.equals(headPointer)) {
+            System.out.println("Given branch is an ancestor of the "
+                    + "current branch.");
+        } else if (splitPoint.equals(branchName)) {
+            GitCommands.checkout3(branchName);
+            System.out.println("Current branch fast-forwarded.");
+        } else {
+            BranchPointer checkedBranch =
+                    BranchPointer.readFileAsBranch(branchFile);
+            BranchPointer currBranch =
+                    BranchPointer.readFileAsBranch(headPointer);
+            Commit checked = Commit.readAsCommit(checkedBranch.getName());
+            Commit current = Commit.readAsCommit(currBranch.getName());
+            Commit split = Commit.readAsCommit(splitPoint);
+
+            for (String name : current.getNames()) {
+                if (checked.contains(name) && split.contains(name)) {
+                    if (!(checked.getUID(name).equals(split.getUID(name)))
+                            && split.getUID(name).
+                            equals(current.getUID(name))) {
+                        GitCommands.checkout2(checkedBranch.getName(), name);
+                        GitCommands.add(name);
+                    }
+                } else if (split.contains(name)) {
+                    if (split.getUID(name).equals(current.getUID(name))) {
+                        GitCommands.rm(name);
+                        Utils.restrictedDelete(Utils.join(BLOBS, name));
+                    }
+                }
+            }
+
+            for (String name : checked.getNames()) {
+                if (!split.contains(name) && !current.contains(name)) {
+                    GitCommands.checkout2(checkedBranch.getName(), name);
+                    GitCommands.add(name);
+                }
+            }
         }
     }
 }

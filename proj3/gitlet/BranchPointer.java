@@ -76,4 +76,11 @@ public class BranchPointer implements Serializable {
         return Utils.readObject(file, BranchPointer.class);
     }
 
+    /** Takes in string NAME and returns the
+     *  BranchPointer with that name. */
+    public static BranchPointer readFileAsBranch(String name) {
+        return Utils.readObject(Utils.join(
+                GitCommands.BRANCHES, name), BranchPointer.class);
+    }
+
 }
