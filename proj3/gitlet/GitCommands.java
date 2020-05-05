@@ -535,6 +535,20 @@ public class GitCommands {
                     checkedBranch.getCurrentCommit());
             Commit current = Commit.readAsCommit(currBranch.getCurrentCommit());
             Commit split = Commit.readAsCommit(splitPoint);
+
+            for (String s : checked.getNames()) {
+                File checkedFile = Utils.join(CWD, s);
+                if (checkedFile.exists()) {
+                    Blob checkedFileAsBlob = new Blob(s, checkedFile);
+                    File blobFile = Utils.join(BLOBS, checkedFileAsBlob.hash());
+                    if (!blobFile.exists()) {
+                        System.out.println("There is an untracked file in the "
+                                + "way; delete it, or add and commit it first.");
+                        System.exit(0);
+                    }
+                }
+            }
+
             for (String name : current.getNames()) {
                 if (checked.contains(name) && split.contains(name)) {
                     if (!(checked.getUID(name).equals(split.getUID(name)))
