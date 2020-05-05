@@ -1,27 +1,37 @@
 package gitlet;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
+/** Represents a Commit that can be serialized.
+ *  @author Amit Bhat
+ */
 public class Commit implements Serializable {
 
+    /** Date of Commit. */
     private Date commitTime;
 
+    /** Message of Commit. */
     private String _message;
 
-    private Map<String, String> _files;
+    /** Files tracked by Commit. */
+    private HashMap<String, String> _files;
 
+    /** Parent of Commit. */
     private String _firstParent;
 
+    /** Second parent of Commit.
+     *  Only in Merge cases. */
     private String _secondParent;
 
-    public Commit(String message, Date time, String firstParent, String secondParent) {
+    /** Instantiates a Commit object with message MESSAGE, time TIME,
+     * parent FIRSTPARENT, and second parent SECONDPARENT. */
+    public Commit(String message, Date time,
+                  String firstParent, String secondParent) {
         _message = message;
         commitTime = time;
         _firstParent = firstParent;
@@ -29,12 +39,17 @@ public class Commit implements Serializable {
         _files = new HashMap<>();
     }
 
+    /** Instantiates a Commit object with message MESSAGE, time TIME,
+     * parent FIRSTPARENT. */
     public Commit(String message, Date time, String firstParent) {
         this(message, time, firstParent, null);
     }
 
+    /** Returns a Commit object that is a copy of this Commit but
+     *  with message MESSAGE. */
     public Commit copy(String message) {
-        Commit copy = new Commit(message, new Date(), _firstParent, _secondParent);
+        Commit copy = new Commit(message, new Date(),
+                _firstParent, _secondParent);
         copy._files = new HashMap<>();
         for (String s : _files.keySet()) {
             copy._files.put(s, _files.get(s));
@@ -42,69 +57,85 @@ public class Commit implements Serializable {
         return copy;
     }
 
+    /** Sets first parent to UID of COMMIT. */
     public void setFirstParent(Commit commit) {
         _firstParent = commit.hash();
     }
 
+    /** Adds all staged files into files. */
     public void addStagedFiles() {
-        Stage staged_additions = Stage.readFileAsStage(GitCommands.additions);
-        for (String s : staged_additions.getKeys()) {
-            _files.put(s, staged_additions.get(s));
+        Stage stagedAdditions = Stage.readFileAsStage(GitCommands.ADDITIONS);
+        for (String s : stagedAdditions.getKeys()) {
+            _files.put(s, stagedAdditions.get(s));
         }
     }
 
+    /** Removes all staged removal files from files. */
     public void removeStagedFiles() {
-        Stage staged_removals = Stage.readFileAsStage(GitCommands.removals);
-        for (String s : staged_removals.getKeys()) {
+        Stage stagedRemovals = Stage.readFileAsStage(GitCommands.REMOVALS);
+        for (String s : stagedRemovals.getKeys()) {
             _files.remove(s);
         }
     }
 
+    /** Returns the Blob with name FILENAME. */
     public Blob getBlob(String fileName) {
         String blobHash = _files.get(fileName);
         File blobFile = Utils.join(GitCommands.BLOBS, blobHash);
         return Blob.readAsBlob(blobFile);
     }
 
+    /** Returns this Commit's message. */
     public String getMessage() {
         return _message;
     }
 
+    /** Returns the files of this Commit. */
     public Map<String, String> getFiles() {
         return _files;
     }
 
+    /** Returns the Date object of this Commit. */
     public Date getDate() {
         return commitTime;
     }
 
-
+    /** Returns the UID of this Commit's first parent. */
     public String getFirstParent() {
         return _firstParent;
     }
 
+    /** Returns the UID of this Commit's second parent. */
     public String getSecondParent() {
         return _secondParent;
     }
 
+    /** Creates and writes this Commit to a file, with
+     *  the name of the file being this Commit's UID. */
     public void makeCommitFile() throws IOException {
         File commitFile = Utils.join(GitCommands.COMMITS, hash());
         commitFile.createNewFile();
         Utils.writeObject(commitFile, this);
     }
 
+    /** Takes in file with path FILE and returns the
+     *  Commit serialized into that file. */
     public static Commit readAsCommit(File file) {
         return Utils.readObject(file, Commit.class);
     }
 
+    /** Returns true if this Commit contains Blob BLOB. */
     public boolean contains(Blob blob) {
         return _files.containsValue(blob.hash());
     }
 
+    /** Returns true if this Commit contains a Blob with name
+     *  FILENAME. */
     public boolean contains(String fileName) {
         return _files.containsKey(fileName);
     }
 
+    /** Returns the SHA-1 UID of this Commit. */
     public String hash() {
         return Utils.sha1((Object) Utils.serialize(this));
     }
@@ -120,6 +151,7 @@ public class Commit implements Serializable {
         return out;
     }
 
+    /** Displays this Commit in the format used by gitCommands.log. */
     public void displayCommit() {
         String separator = "===", merge = "";
         String header, date, message;

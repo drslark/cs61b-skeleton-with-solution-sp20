@@ -1,0 +1,20 @@
+# Testing adding, removing, and committing.
+I definitions.in
++ a.txt mattu.txt
++ b.txt fattu.txt
+> add a.txt
+<<<
+> add b.txt
+<<<
+> commit "first commit"
+<<<
++ c.txt notwug.txt
+> add c.txt
+<<<
+> rm a.txt
+<<<
+> commit "second commit"
+<<<
+E b.txt
+E c.txt
+* a.txt

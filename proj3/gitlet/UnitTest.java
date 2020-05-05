@@ -2,7 +2,6 @@ package gitlet;
 
 import ucb.junit.textui;
 import org.junit.Test;
-import java.io.File;
 
 import java.io.IOException;
 
@@ -25,9 +24,7 @@ public class UnitTest {
         GitCommands.init();
         assertTrue(GitCommands.GITLET.exists());
         assertTrue(GitCommands.COMMITS.exists());
-
         assertTrue(GitCommands.STAGING_AREA.exists());
-
     }
 
 }

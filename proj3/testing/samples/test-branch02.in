@@ -1,0 +1,35 @@
+# Test branch creation, checkout, and removal.
+I definitions.in
++ a.txt mattu.txt
++ b.txt wug.txt
+> add a.txt
+<<<
+> add b.txt
+<<<
+> commit "Added a and b"
+<<<
+> branch aux
+<<<
+> checkout aux
+<<<
+E a.txt
+E b.txt
++ c.txt wug.txt
++ a.txt fattu.txt
+= b.txt wug.txt
+> add a.txt
+<<<
+> add c.txt
+<<<
+> commit "added c"
+<<<
+> checkout master
+<<<
+= a.txt mattu.txt
+= b.txt wug.txt
+* c.txt
+> rm-branch aux
+<<<
+> checkout aux
+No such branch exists.
+<<<

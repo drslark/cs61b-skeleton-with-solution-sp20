@@ -25,7 +25,13 @@ public class Main {
             System.out.println("Not in an initialized Gitlet directory.");
             System.exit(0);
         }
+        processFirstHalfCommands(args);
+    }
 
+    /** Helper function for processing Gitlet commands. Takes in arguments
+     *  ARGS. */
+    public static void processFirstHalfCommands(String... args)
+            throws IOException {
         switch (args[0]) {
         case "add":
             if (args.length != 2) {
@@ -76,14 +82,26 @@ public class Main {
             }
             GitCommands.status();
             break;
+        default:
+            processSecondHalfCommands(args);
+            break;
+        }
+    }
+
+    /** Helper function for processing remaining Gitlet commands.
+     * Takes in arguments ARGS. */
+    public static void processSecondHalfCommands(String... args)
+            throws IOException {
+        switch (args[0]) {
         case "checkout":
             if (args[1].equals("--") && args.length == 3) {
-                GitCommands.checkout(args[2], "", 1);
-            } else if (args[1].matches("[a-f0-9]+") && (args[2].equals("--"))
+                GitCommands.checkout1(args[2]);
+            } else if (args[1].matches("[a-f0-9]+")
+                    && (args[2].equals("--"))
                     && args.length == 4) {
-                GitCommands.checkout(args[1], args[3], 2);
-            } else if (args.length == 2){
-                GitCommands.checkout(args[1], "", 3);
+                GitCommands.checkout2(args[1], args[3]);
+            } else if (args.length == 2) {
+                GitCommands.checkout3(args[1]);
             } else {
                 System.out.println("Incorrect operands.");
                 System.exit(0);
@@ -107,7 +125,5 @@ public class Main {
             System.out.println("No command with that name exists.");
             System.exit(0);
         }
-
     }
-
 }
