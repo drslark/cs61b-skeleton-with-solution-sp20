@@ -541,7 +541,6 @@ public class GitCommands {
                     checkedBranch.getCurrentCommit());
             Commit current = Commit.readAsCommit(currBranch.getCurrentCommit());
             Commit split = Commit.readAsCommit(splitPoint);
-
             for (String name : checked.getNames()) {
                 unTrackedFileChecker(name);
                 if (!split.contains(name) && !current.contains(name)) {
@@ -565,8 +564,63 @@ public class GitCommands {
                     }
                 }
             }
+            conflictHandler(checked, current, split);
             mergeCommit(branchName);
         }
+    }
+
+    /** Returns true if file NAME has a merge conflict when comparing Commits
+     *  CHECKED, CURRENT, and SPLIT. */
+    public static boolean conflictChecker(Commit checked, Commit current,
+                                       Commit split, String name) {
+        boolean diffFiles = !(!checked.getUID(name).equals(split.getUID(name))
+            && !current.getUID(name).equals(split.getUID(name)));
+        boolean oneEmpty = (checked.contains(name) && !current.contains(name)
+                && !checked.getUID(name).equals(split.getUID(name)))
+                || (!checked.contains(name) && current.contains(name)
+                && !checked.getUID(name).equals(split.getUID(name)));
+        boolean notInSplit = !split.contains(name)
+                && !current.getUID(name).equals(current.getUID(name));
+
+        return diffFiles || oneEmpty || notInSplit;
+    }
+
+    /** Helper function that handles merge conflict cases in the Commits
+     *  CHECKED, CURRENT, and SPLIT. */
+    public static void conflictHandler(Commit checked, Commit current,
+                                          Commit split) {
+        boolean anyConflict = false;
+        for (String name : current.getNames()) {
+            boolean conflict = conflictChecker(checked, current, split, name);
+            if (conflict) {
+                String contentsCurr = current.readBlobAsString(name);
+                String contentsChecked = checked.readBlobAsString(name);
+                String newContents = "<<<<<<< HEAD\n"
+                        + contentsCurr + "\n=======" + contentsChecked
+                        + ">>>>>>>";
+                Utils.writeContents(Utils.join(BLOBS, current.getUID(name)),
+                        newContents);
+                anyConflict = true;
+            }
+        }
+        for (String name : checked.getNames()) {
+            boolean conflict = conflictChecker(checked, current, split, name);
+            if (conflict) {
+                String contentsCurr = current.readBlobAsString(name);
+                String contentsChecked = checked.readBlobAsString(name);
+                String newContents = "<<<<<<< HEAD\n"
+                        + contentsCurr + "\n=======" + contentsChecked
+                        + ">>>>>>>";
+                Utils.writeContents(Utils.join(BLOBS, current.getUID(name)),
+                        newContents);
+                anyConflict = true;
+            }
+        }
+
+        if (anyConflict) {
+            System.out.println("Encountered a merge conflict.");
+        }
+
     }
 
     /** Helper method for merge; executes a merge style commit, with

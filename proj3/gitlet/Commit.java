@@ -160,6 +160,17 @@ public class Commit implements Serializable {
         Utils.writeObject(commitFile, this);
     }
 
+    /** Returns a String of the contents of the serialized Blob
+     *  with name NAME. */
+    public String readBlobAsString(String name) {
+        String blobID = _files.get(name);
+        File blobFile = Utils.join(GitCommands.BLOBS, blobID);
+        if (!blobFile.exists()) {
+            return "";
+        }
+        return Utils.readContentsAsString(blobFile);
+    }
+
     /** Takes in file with path FILE and returns the
      *  Commit serialized into that file. */
     public static Commit readAsCommit(File file) {
