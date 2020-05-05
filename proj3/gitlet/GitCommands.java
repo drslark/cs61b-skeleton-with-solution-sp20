@@ -189,7 +189,6 @@ public class GitCommands {
         Stage additionStage = Stage.readFileAsStage(additions);
         Stage removalStage = Stage.readFileAsStage(removals);
 
-
         System.out.println("=== Branches ===");
         for (File f : Objects.requireNonNull(BRANCHES.listFiles())) {
             BranchPointer currentBranch = BranchPointer.readFileAsBranch(f);
@@ -215,6 +214,78 @@ public class GitCommands {
 
         System.out.println("=== Modifications Not Staged For Commit ===\n");
         System.out.println("=== Untracked Files ===\n");
+
+    }
+
+    public static void checkout(String arg1, String arg2, int commandType)
+            throws IOException {
+
+        if (commandType == 1) {
+            head_commit = Utils.readContentsAsString(HEAD);
+            Commit latestCommit =
+                    Commit.readAsCommit(Utils.join(COMMITS, head_commit));
+
+            if (!latestCommit.contains(arg1)) {
+                System.out.println("File does not exist in that commit.");
+                System.exit(0);
+            }
+
+            checkoutHelper(latestCommit, arg1);
+        } else if (commandType == 2) {
+            File commitFile = Utils.join(COMMITS, arg1);
+            if (!commitFile.exists()) {
+                System.out.println("No commit with that id exists.");
+                System.exit(0);
+            }
+
+            Commit latestCommit = Commit.readAsCommit(commitFile);
+            if (!latestCommit.contains(arg2)) {
+                System.out.println("File does not exist in that commit.");
+                System.exit(0);
+            }
+
+            checkoutHelper(latestCommit, arg2);
+        } else {
+            File branchFile = Utils.join(BRANCHES, arg1);
+            if (!branchFile.exists()) {
+                System.out.println("No such branch exists.");
+                System.exit(0);
+            }
+            BranchPointer branch = BranchPointer.readFileAsBranch(branchFile);
+            if (branch.isCurrentBranch()) {
+                System.out.println("No need to checkout the current branch.");
+                System.exit(0);
+            }
+            String commitHash = branch.getCurrentCommit();
+            Commit currCommit =
+                    Commit.readAsCommit(Utils.join(COMMITS, commitHash));
+
+            for (String s : currCommit.getFiles().keySet()) {
+                File checkedFile = Utils.join(CWD, s);
+                Blob checkedFileAsBlob = new Blob(s, checkedFile);
+                File blobFile = Utils.join(BLOBS, checkedFileAsBlob.hash());
+                if (checkedFile.exists() && !blobFile.exists()) {
+                    System.out.println("There is an untracked file in the way; "
+                            + "delete it, or add and commit it first.");
+                    System.exit(0);
+                }
+                checkoutHelper(currCommit, s);
+            }
+        }
+
+    }
+
+    public static void checkoutHelper(Commit commit, String fileName)
+            throws IOException {
+        Blob wantedBlob = commit.getBlob(fileName);
+        byte[] contents = wantedBlob.getContents();
+
+        File file = Utils.join(CWD, fileName);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+
+        Utils.writeContents(file, contents);
 
     }
 
