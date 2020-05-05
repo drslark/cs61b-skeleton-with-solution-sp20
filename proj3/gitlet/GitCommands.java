@@ -462,7 +462,7 @@ public class GitCommands {
         currBranch.writeBranchToFile(Utils.join(BRANCHES, headPointer));
     }
 
-    /** Returns the split point between the branches CURRENT and CHECKEDOUT
+    /** Returns the split point between the commits CURRENT and CHECKEDOUT
      *  with minimum distance from the current branch head. */
     public static String findSplitPoint(String current, String checkedOut) {
         if (current == null || checkedOut == null) {
@@ -519,7 +519,9 @@ public class GitCommands {
             System.out.println("Cannot merge a branch with itself.");
             System.exit(0);
         }
-        String splitPoint = findSplitPoint(headPointer, branchName);
+        BranchPointer checkedBranch = BranchPointer.readFileAsBranch(branchFile),
+                currBranch = BranchPointer.readFileAsBranch(headPointer);
+        String splitPoint = findSplitPoint(checkedBranch.getCurrentCommit(), currBranch.getCurrentCommit());
         if (splitPoint.equals(headPointer)) {
             System.out.println("Given branch is an ancestor of the "
                     + "current branch.");
@@ -527,9 +529,6 @@ public class GitCommands {
             GitCommands.checkout3(branchName);
             System.out.println("Current branch fast-forwarded.");
         } else {
-            BranchPointer checkedBranch = BranchPointer.
-                    readFileAsBranch(branchFile),
-                currBranch = BranchPointer.readFileAsBranch(headPointer);
             Commit checked = Commit.readAsCommit(
                     checkedBranch.getCurrentCommit());
             Commit current = Commit.readAsCommit(currBranch.getCurrentCommit());
@@ -538,19 +537,18 @@ public class GitCommands {
                 if (checked.contains(name) && split.contains(name)) {
                     if (!(checked.getUID(name).equals(split.getUID(name)))
                         && split.getUID(name).equals(current.getUID(name))) {
-                        GitCommands.checkout2(checkedBranch.getName(), name);
+                        GitCommands.checkout2(checkedBranch.getCurrentCommit(), name);
                         GitCommands.add(name);
                     }
                 } else if (split.contains(name)) {
                     if (split.getUID(name).equals(current.getUID(name))) {
-                        GitCommands.rm(name);
-                        Utils.restrictedDelete(Utils.join(BLOBS, name));
+                        GitCommands.rm(name); Utils.join(BLOBS, name).delete();
                     }
                 }
             }
             for (String name : checked.getNames()) {
                 if (!split.contains(name) && !current.contains(name)) {
-                    GitCommands.checkout2(checkedBranch.getName(), name);
+                    GitCommands.checkout2(checkedBranch.getCurrentCommit(), name);
                     GitCommands.add(name);
                 }
             }
