@@ -67,6 +67,11 @@ public class Commit implements Serializable {
         _firstParent = commit.hash();
     }
 
+    /** Sets second parent to UID of COMMIT. */
+    public void setSecondParent(Commit commit) {
+        _secondParent = commit.hash();
+    }
+
     /** Adds all staged files into files. */
     public void addStagedFiles() {
         Stage stagedAdditions = Stage.readFileAsStage(GitCommands.ADDITIONS);
