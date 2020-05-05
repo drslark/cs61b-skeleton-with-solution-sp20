@@ -530,10 +530,10 @@ public class GitCommands {
         BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
         String splitPoint = findSplitPoint(checkedBranch.getCurrentCommit(),
                 currBranch.getCurrentCommit());
-        if (splitPoint.equals(branchName)) {
+        if (splitPoint.equals(checkedBranch.getCurrentCommit())) {
             System.out.println("Given branch is an ancestor of the "
                     + "current branch.");
-        } else if (splitPoint.equals(headPointer)) {
+        } else if (splitPoint.equals(currBranch.getCurrentCommit())) {
             GitCommands.checkout3(branchName);
             System.out.println("Current branch fast-forwarded.");
         } else {
