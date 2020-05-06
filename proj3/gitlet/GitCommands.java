@@ -613,7 +613,7 @@ public class GitCommands {
                     curr = contentsCurr.getContentsAsString();
                 }
                 String newContents = "<<<<<<< HEAD\n"
-                        + curr + "=======" + check + ">>>>>>>";
+                        + curr + "=======\n" + check + ">>>>>>>";
                 if (!Utils.join(CWD, name).exists()) {
                     Utils.join(CWD, name).createNewFile();
                 }
@@ -640,7 +640,7 @@ public class GitCommands {
                     curr = contentsCurr.getContentsAsString();
                 }
                 String newContents = "<<<<<<< HEAD\n"
-                        + curr + "=======" + check + ">>>>>>>";
+                        + curr + "=======\n" + check + ">>>>>>>";
                 if (!Utils.join(CWD, name).exists()) {
                     Utils.join(CWD, name).createNewFile();
                 }
