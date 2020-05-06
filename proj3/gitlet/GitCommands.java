@@ -639,7 +639,7 @@ public class GitCommands {
                 } else  {
                     curr = contentsCurr.getContentsAsString();
                 }
-                String newContents = "<<<<<<< HEAD"
+                String newContents = "<<<<<<< HEAD\n"
                         + curr + "=======" + check + ">>>>>>>";
                 if (!Utils.join(CWD, name).exists()) {
                     Utils.join(CWD, name).createNewFile();
