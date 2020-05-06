@@ -576,8 +576,9 @@ public class GitCommands {
 
         boolean diffFiles = (checked.contains(name) && current.contains(name)
                 && split.contains(name))
-                && !(!checked.getUID(name).equals(split.getUID(name))
-                && !current.getUID(name).equals(split.getUID(name)));
+                && !checked.getUID(name).equals(split.getUID(name))
+                && !current.getUID(name).equals(split.getUID(name))
+                && !current.getUID(name).equals((checked.getUID(name)));
         boolean oneEmpty = split.contains(name)
                 && ((checked.contains(name) && !current.contains(name)
                 && !checked.getUID(name).equals(split.getUID(name)))
@@ -593,18 +594,20 @@ public class GitCommands {
     /** Helper function that handles merge conflict cases in the Commits
      *  CHECKED, CURRENT, and SPLIT. */
     public static void conflictHandler(Commit checked, Commit current,
-                                          Commit split) {
+                                          Commit split) throws IOException {
         boolean anyConflict = false;
         for (String name : current.getNames()) {
             boolean conflict = conflictChecker(checked, current, split, name);
             if (conflict) {
-                String contentsCurr = current.readBlobAsString(name);
-                String contentsChecked = checked.readBlobAsString(name);
+                Blob contentsCurr = current.getBlob(name);
+                Blob contentsChecked = checked.getBlob(name);
                 String newContents = "<<<<<<< HEAD\n"
-                        + contentsCurr + "\n=======" + contentsChecked
-                        + ">>>>>>>";
-                Utils.writeContents(Utils.join(BLOBS, current.getUID(name)),
+                        + contentsCurr.getContentsAsString() + "\n======="
+                        + contentsChecked.getContentsAsString()
+                        + ">>>>>>>\n";
+                Utils.writeContents(Utils.join(CWD, name),
                         newContents);
+                GitCommands.add(name);
                 anyConflict = true;
             }
         }
@@ -616,8 +619,9 @@ public class GitCommands {
                 String newContents = "<<<<<<< HEAD\n"
                         + contentsCurr + "\n=======" + contentsChecked
                         + ">>>>>>>\n";
-                Utils.writeContents(Utils.join(BLOBS, current.getUID(name)),
+                Utils.writeContents(Utils.join(CWD, name),
                         newContents);
+                GitCommands.add(name);
                 anyConflict = true;
             }
         }
@@ -638,7 +642,9 @@ public class GitCommands {
                 + " into " + headPointer + ".");
         BranchPointer curr = BranchPointer.readFileAsBranch(headPointer);
         Commit newCommit = Commit.readAsCommit(curr.getCurrentCommit());
-        newCommit.setSecondParent(checked); newCommit.makeCommitFile();
+        Utils.join(COMMITS, curr.getCurrentCommit()).delete();
+        newCommit.setSecondParent(checked);
+        newCommit.makeCommitFile();
         curr.setCurrentCommit(newCommit.hash());
         curr.writeBranchToFile(Utils.join(BRANCHES, headPointer));
     }

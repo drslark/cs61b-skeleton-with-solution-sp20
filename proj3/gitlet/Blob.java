@@ -31,6 +31,15 @@ public class Blob implements Serializable {
         return _contents;
     }
 
+    /** Return this Blob's contents as a String. */
+    public String getContentsAsString() {
+        File temp = Utils.join(GitCommands.GITLET, "temp");
+        Utils.writeContents(temp, _contents);
+        String strContents = Utils.readContentsAsString(temp);
+        temp.delete();
+        return strContents;
+    }
+
     /** Creates and writes this Blob to a file, with
      *  the name of the file being this Blob's UID. */
     public void makeBlobFile() throws IOException {
