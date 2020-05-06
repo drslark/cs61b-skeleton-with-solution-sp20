@@ -611,7 +611,7 @@ public class GitCommands {
                     curr = current.getBlob(name).getContentsAsString();
                 }
                 String newContents = "<<<<<<< HEAD\n"
-                        + curr + "=======\n" + check + ">>>>>>>";
+                        + curr + "=======\n" + check + ">>>>>>>\n";
                 if (!Utils.join(CWD, name).exists()) {
                     Utils.join(CWD, name).createNewFile();
                 }
@@ -636,7 +636,7 @@ public class GitCommands {
                     curr = current.getBlob(name).getContentsAsString();
                 }
                 String newContents = "<<<<<<< HEAD\n"
-                        + curr + "=======\n" + check + ">>>>>>>";
+                        + curr + "=======\n" + check + ">>>>>>>\n";
                 if (!Utils.join(CWD, name).exists()) {
                     Utils.join(CWD, name).createNewFile();
                 }
