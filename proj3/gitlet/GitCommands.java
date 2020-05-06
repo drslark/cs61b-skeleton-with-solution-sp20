@@ -613,7 +613,10 @@ public class GitCommands {
                     curr = contentsCurr.getContentsAsString();
                 }
                 String newContents = "<<<<<<< HEAD\n"
-                        + curr + "\n=======\n" + check + ">>>>>>>";
+                        + curr + "=======" + check + ">>>>>>>";
+                if (!Utils.join(CWD, name).exists()) {
+                    Utils.join(CWD, name).createNewFile();
+                }
                 PrintWriter writer = new PrintWriter(
                         Utils.join(CWD, name), StandardCharsets.UTF_8);
                 writer.println(newContents);
@@ -636,8 +639,11 @@ public class GitCommands {
                 } else  {
                     curr = contentsCurr.getContentsAsString();
                 }
-                String newContents = "<<<<<<< HEAD\n"
-                        + curr + "\n=======\n" + check + ">>>>>>>";
+                String newContents = "<<<<<<< HEAD"
+                        + curr + "=======" + check + ">>>>>>>";
+                if (!Utils.join(CWD, name).exists()) {
+                    Utils.join(CWD, name).createNewFile();
+                }
                 PrintWriter writer = new PrintWriter(
                         Utils.join(CWD, name), StandardCharsets.UTF_8);
                 writer.println(newContents);
