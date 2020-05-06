@@ -603,10 +603,17 @@ public class GitCommands {
             if (conflict) {
                 Blob contentsCurr = current.getBlob(name);
                 Blob contentsChecked = checked.getBlob(name);
+                String curr = "", check = "";
+                if (contentsCurr != null && contentsChecked != null) {
+                    curr = contentsCurr.getContentsAsString();
+                    check = contentsChecked.getContentsAsString();
+                } else if (contentsCurr == null) {
+                    check = contentsChecked.getContentsAsString();
+                } else  {
+                    curr = contentsCurr.getContentsAsString();
+                }
                 String newContents = "<<<<<<< HEAD\n"
-                        + contentsCurr.getContentsAsString() + "\n=======\n"
-                        + contentsChecked.getContentsAsString()
-                        + ">>>>>>>";
+                        + curr + "\n=======\n" + check + ">>>>>>>";
                 PrintWriter writer = new PrintWriter(
                         Utils.join(CWD, name), StandardCharsets.UTF_8);
                 writer.println(newContents);
@@ -620,10 +627,17 @@ public class GitCommands {
             if (conflict) {
                 Blob contentsCurr = current.getBlob(name);
                 Blob contentsChecked = checked.getBlob(name);
+                String curr = "", check = "";
+                if (contentsCurr != null && contentsChecked != null) {
+                    curr = contentsCurr.getContentsAsString();
+                    check = contentsChecked.getContentsAsString();
+                } else if (contentsCurr == null) {
+                    check = contentsChecked.getContentsAsString();
+                } else  {
+                    curr = contentsCurr.getContentsAsString();
+                }
                 String newContents = "<<<<<<< HEAD\n"
-                        + contentsCurr.getContentsAsString() + "\n=======\n"
-                        + contentsChecked.getContentsAsString()
-                        + ">>>>>>>";
+                        + curr + "\n=======\n" + check + ">>>>>>>";
                 PrintWriter writer = new PrintWriter(
                         Utils.join(CWD, name), StandardCharsets.UTF_8);
                 writer.println(newContents);
@@ -632,11 +646,9 @@ public class GitCommands {
                 anyConflict = true;
             }
         }
-
         if (anyConflict) {
             System.out.println("Encountered a merge conflict.");
         }
-
     }
 
     /** Helper method for merge; executes a merge style commit, with
