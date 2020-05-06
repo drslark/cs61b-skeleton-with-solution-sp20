@@ -530,8 +530,8 @@ public class GitCommands {
         BranchPointer checkedBranch = BranchPointer.
                 readFileAsBranch(branchFile);
         BranchPointer currBranch = BranchPointer.readFileAsBranch(headPointer);
-        String splitPoint = findSplitPoint(checkedBranch.getCurrentCommit(),
-                currBranch.getCurrentCommit());
+        String splitPoint = findSplitPoint(currBranch.getCurrentCommit(),
+                checkedBranch.getCurrentCommit());
         if (splitPoint.equals(checkedBranch.getCurrentCommit())) {
             System.out.println("Given branch is an ancestor of the "
                     + "current branch.");

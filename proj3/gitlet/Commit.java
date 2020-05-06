@@ -138,7 +138,7 @@ public class Commit implements Serializable {
             return DIST_OF_BAD_PATH;
         }
         if (commit1.equals(commit2)) {
-            return 1;
+            return 0;
         } else {
             Commit currCommit = Commit.readAsCommit(Utils.join(
                     GitCommands.COMMITS, commit1));
