@@ -1,0 +1,66 @@
+# Create two branches and merge other into master.
+I definitions.in
++ f.txt wug.txt
++ g.txt notwug.txt
+> add g.txt
+<<<
+> add f.txt
+<<<
+> commit "Two files"
+<<<
+> branch other
+<<<
++ h.txt mattu.txt
+> add h.txt
+<<<
+> rm g.txt
+<<<
++ f.txt mattu.txt
+> add f.txt
+<<<
+> commit "Add h.txt, remove g.txt, and change f.txt"
+<<<
+> checkout other
+<<<
+> rm f.txt
+<<<
++ k.txt ruttu.txt
+> add k.txt
+<<<
+> commit "Add k.txt and remove f.txt"
+<<<
+> checkout master
+<<<
+> log
+===
+${COMMIT_HEAD}
+${ARBLINES}
+<<<*
+D MASTER_HEAD "${1}"
+> merge other
+Encountered a merge conflict.
+<<<
+* g.txt
+= h.txt mattu.txt
+= k.txt ruttu.txt
+= f.txt conflict-1.txt
+> log
+${COMMIT_LOG}
+===
+commit ${MASTER_HEAD}
+${ARBLINES}
+<<<*
+> status
+=== Branches ===
+\*master
+other
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
+<<<*

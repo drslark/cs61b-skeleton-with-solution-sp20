@@ -601,16 +601,14 @@ public class GitCommands {
         for (String name : current.getNames()) {
             boolean conflict = conflictChecker(checked, current, split, name);
             if (conflict) {
-                Blob contentsCurr = current.getBlob(name);
-                Blob contentsChecked = checked.getBlob(name);
                 String curr = "", check = "";
-                if (contentsCurr != null && contentsChecked != null) {
-                    curr = contentsCurr.getContentsAsString();
-                    check = contentsChecked.getContentsAsString();
-                } else if (contentsCurr == null) {
-                    check = contentsChecked.getContentsAsString();
-                } else  {
-                    curr = contentsCurr.getContentsAsString();
+                if (current.contains(name) && checked.contains(name)) {
+                    curr = current.getBlob(name).getContentsAsString();
+                    check = checked.getBlob(name).getContentsAsString();
+                } else if (checked.contains(name)) {
+                    check = checked.getBlob(name).getContentsAsString();
+                } else if (current.contains(name)) {
+                    curr = current.getBlob(name).getContentsAsString();
                 }
                 String newContents = "<<<<<<< HEAD\n"
                         + curr + "=======\n" + check + ">>>>>>>";
@@ -628,16 +626,14 @@ public class GitCommands {
         for (String name : checked.getNames()) {
             boolean conflict = conflictChecker(checked, current, split, name);
             if (conflict) {
-                Blob contentsCurr = current.getBlob(name);
-                Blob contentsChecked = checked.getBlob(name);
                 String curr = "", check = "";
-                if (contentsCurr != null && contentsChecked != null) {
-                    curr = contentsCurr.getContentsAsString();
-                    check = contentsChecked.getContentsAsString();
-                } else if (contentsCurr == null) {
-                    check = contentsChecked.getContentsAsString();
-                } else  {
-                    curr = contentsCurr.getContentsAsString();
+                if (current.contains(name) && checked.contains(name)) {
+                    curr = current.getBlob(name).getContentsAsString();
+                    check = checked.getBlob(name).getContentsAsString();
+                } else if (checked.contains(name)) {
+                    check = checked.getBlob(name).getContentsAsString();
+                } else if (current.contains(name)) {
+                    curr = current.getBlob(name).getContentsAsString();
                 }
                 String newContents = "<<<<<<< HEAD\n"
                         + curr + "=======\n" + check + ">>>>>>>";
