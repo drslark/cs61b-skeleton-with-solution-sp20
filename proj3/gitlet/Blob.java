@@ -2,6 +2,7 @@ package gitlet;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 
 /** Represents a Blob that can be serialized.
  *  @author Amit Bhat
@@ -33,11 +34,7 @@ public class Blob implements Serializable {
 
     /** Return this Blob's contents as a String. */
     public String getContentsAsString() {
-        File temp = Utils.join(GitCommands.GITLET, "temp");
-        Utils.writeContents(temp, _contents);
-        String strContents = Utils.readContentsAsString(temp);
-        temp.delete();
-        return strContents;
+        return new String(_contents, StandardCharsets.UTF_8);
     }
 
     /** Creates and writes this Blob to a file, with

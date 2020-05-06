@@ -1,8 +1,10 @@
 package gitlet;
 
 import java.io.File;
-import java.util.TreeSet;
+import java.io.PrintWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.TreeSet;
 import java.util.Objects;
 import java.util.ArrayList;
 import java.util.Set;
@@ -602,11 +604,13 @@ public class GitCommands {
                 Blob contentsCurr = current.getBlob(name);
                 Blob contentsChecked = checked.getBlob(name);
                 String newContents = "<<<<<<< HEAD\n"
-                        + contentsCurr.getContentsAsString() + "\n======="
+                        + contentsCurr.getContentsAsString() + "\n=======\n"
                         + contentsChecked.getContentsAsString()
-                        + ">>>>>>>\n";
-                Utils.writeContents(Utils.join(CWD, name),
-                        newContents);
+                        + ">>>>>>>";
+                PrintWriter writer = new PrintWriter(
+                        Utils.join(CWD, name), StandardCharsets.UTF_8);
+                writer.println(newContents);
+                writer.close();
                 GitCommands.add(name);
                 anyConflict = true;
             }
@@ -614,13 +618,16 @@ public class GitCommands {
         for (String name : checked.getNames()) {
             boolean conflict = conflictChecker(checked, current, split, name);
             if (conflict) {
-                String contentsCurr = current.readBlobAsString(name);
-                String contentsChecked = checked.readBlobAsString(name);
+                Blob contentsCurr = current.getBlob(name);
+                Blob contentsChecked = checked.getBlob(name);
                 String newContents = "<<<<<<< HEAD\n"
-                        + contentsCurr + "\n=======" + contentsChecked
-                        + ">>>>>>>\n";
-                Utils.writeContents(Utils.join(CWD, name),
-                        newContents);
+                        + contentsCurr.getContentsAsString() + "\n=======\n"
+                        + contentsChecked.getContentsAsString()
+                        + ">>>>>>>";
+                PrintWriter writer = new PrintWriter(
+                        Utils.join(CWD, name), StandardCharsets.UTF_8);
+                writer.println(newContents);
+                writer.close();
                 GitCommands.add(name);
                 anyConflict = true;
             }
