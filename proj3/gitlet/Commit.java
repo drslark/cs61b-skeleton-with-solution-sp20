@@ -54,7 +54,7 @@ public class Commit implements Serializable {
      *  with message MESSAGE. */
     public Commit copy(String message) {
         Commit copy = new Commit(message, new Date(),
-                _firstParent, _secondParent);
+                _firstParent);
         copy._files = new HashMap<>();
         for (String s : _files.keySet()) {
             copy._files.put(s, _files.get(s));

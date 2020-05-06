@@ -1,66 +1,53 @@
-# Create two branches and merge other into master.
-I definitions.in
+# Criss-cross merge.
+> init
+<<<
+> branch given
+<<<
 + f.txt wug.txt
-+ g.txt notwug.txt
-> add g.txt
-<<<
 > add f.txt
 <<<
-> commit "Two files"
+> commit "Add f.txt containing wug.txt"
 <<<
-> branch other
+> checkout given
 <<<
-+ h.txt mattu.txt
-> add h.txt
-<<<
-> rm g.txt
-<<<
-+ f.txt mattu.txt
++ f.txt notwug.txt
 > add f.txt
 <<<
-> commit "Add h.txt, remove g.txt, and change f.txt"
+> commit "Add f.txt containing notwug.txt"
 <<<
-> checkout other
+> branch B
+<<<
+> merge master
+Encountered a merge conflict.
+<<<
+= f.txt conflict3.txt
++ f.txt notwug.txt
+> add f.txt
+<<<
+> commit "Reset f to notwug.txt"
 <<<
 > rm f.txt
 <<<
-+ k.txt ruttu.txt
-> add k.txt
-<<<
-> commit "Add k.txt and remove f.txt"
+> commit "given now empty."
 <<<
 > checkout master
 <<<
-> log
-===
-${COMMIT_HEAD}
-${ARBLINES}
-<<<*
-D MASTER_HEAD "${1}"
-> merge other
++ g.txt mattu.txt
+> add g.txt
+<<<
+> commit "Added g.txt"
+<<<
+> merge B
 Encountered a merge conflict.
 <<<
-* g.txt
-= h.txt mattu.txt
-= k.txt ruttu.txt
-= f.txt conflict-1.txt
-> log
-${COMMIT_LOG}
-===
-commit ${MASTER_HEAD}
-${ARBLINES}
-<<<*
-> status
-=== Branches ===
-\*master
-other
-
-=== Staged Files ===
-
-=== Removed Files ===
-
-=== Modifications Not Staged For Commit ===
-
-=== Untracked Files ===
-
-<<<*
+= f.txt conflict4.txt
++ f.txt wug.txt
+> add f.txt
+<<<
+> commit "Reset f to wug.txt"
+<<<
+> merge given
+Encountered a merge conflict.
+<<<
+= f.txt conflict4.txt
+= g.txt mattu.txt

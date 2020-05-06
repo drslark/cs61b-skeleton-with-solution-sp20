@@ -588,7 +588,7 @@ public class GitCommands {
                 && !current.getUID(name).equals(split.getUID(name))));
         boolean notInSplit = !split.contains(name)
                 && checked.contains(name) && current.contains(name)
-                && !current.getUID(name).equals(current.getUID(name));
+                && !checked.getUID(name).equals(current.getUID(name));
 
         return diffFiles || oneEmpty || notInSplit;
     }
@@ -617,7 +617,7 @@ public class GitCommands {
                 }
                 PrintWriter writer = new PrintWriter(
                         Utils.join(CWD, name), StandardCharsets.UTF_8);
-                writer.println(newContents);
+                writer.print(newContents);
                 writer.close();
                 GitCommands.add(name);
                 anyConflict = true;
@@ -642,7 +642,7 @@ public class GitCommands {
                 }
                 PrintWriter writer = new PrintWriter(
                         Utils.join(CWD, name), StandardCharsets.UTF_8);
-                writer.println(newContents);
+                writer.print(newContents);
                 writer.close();
                 GitCommands.add(name);
                 anyConflict = true;
